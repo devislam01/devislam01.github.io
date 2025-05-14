@@ -1,0 +1,85 @@
+<script setup>
+import Breadcrumb from "../Common/Breadcrumb.vue";
+import {ref} from "vue";
+import TopNavigation from "../Common/TopNavigation.vue";
+import {useUserStore} from "@/stores/userStore"
+import { useToast } from "vue-toastification";
+import { useRouter } from "vue-router";
+
+const userStore = useUserStore();
+const toast = useToast();
+const router = useRouter();
+const formRef = ref(null)
+const form = ref({
+  email: '',
+  password: '',
+})
+
+const input = ref('');
+
+const rules = ref({
+  email: [{ required: true, message: 'Please input Email Address', trigger: 'blur' }],
+  password: [{ required: true, message: 'Please input Password', trigger: 'blur' }],
+})
+
+
+const loginUser = async () => {
+  try {
+    await formRef.value.validate();
+
+    const payload = {
+      email: form.value.email,
+      password: form.value.password,
+    };
+
+    const response = await userStore.loginUser(payload);
+
+    console.log('Login success:', response);
+    toast.success('Login Success')
+    router.push({ path: '/', query: { showMessageBox: 'true' } });
+
+  } catch (error) {
+    console.error('Login failed:', error);
+    toast.error('Login Failed')
+  }
+};
+
+</script>
+
+<template>
+  <TopNavigation></TopNavigation>
+  <Breadcrumb style="margin: 20px;"></Breadcrumb>
+  <el-form ref="formRef" :model="form" :rules="rules">
+    <el-row style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4); border-radius: 15px; margin: 50px 0 0 0; width: 1122px; justify-self: center;">
+      <el-col :span="12" style="padding: 30px;">
+          <div style="text-align: left;">
+            <div style="float: left; font-weight: bold; color: #0F5841; font-size: 2rem; width: 100%;">Login</div>
+            <div style="float: left; margin: 30px 0 -20px 0;"><el-form-item label="Email" prop="email"></el-form-item></div>
+          </div>
+        <el-input v-model="form.email" placeholder="Please enter your Email" style="height: 40px;"></el-input>
+        <div style="text-align: left;">
+          <div style="float: left; margin: 30px 0 -20px 0;"><el-form-item label="Password" prop="password"></el-form-item></div>
+        </div>
+        <el-input v-model="form.password" placeholder="Please enter your Password" style="height: 40px;"></el-input>
+        <div style="text-align: right; margin: 5px 5px 0 0;"><el-link type="success"><RouterLink to="/forgetPassword" style="color: #0F5841;">Forget Password?</RouterLink></el-link></div>
+        <el-button round color="#0F5841" style="margin: 30px 0 20px 0; background-image: linear-gradient(to right, #0F5841 , #87AB9F); border: none; width: 490px;" size="large" @click="loginUser">Login</el-button>
+      </el-col>
+      <el-col :span="12" style="background-image: linear-gradient(to right, #0F5841 , #87AB9F);border-end-end-radius: 13px; border-top-right-radius: 13px; align-content: center">
+      <div> 
+        <div style="font-weight: bold; color: white; font-size: 1.3rem; width: 100%; text-align: center;">Welcome back!</div>
+        <div style="color: white; font-size: 1rem; margin-top: 20px; margin-left: 100px; margin-right: 100px;">Welcome back! We're thrilled to see you again. Log in to SecondLife UNIMAS and resume your journey into the world of trading preloved items among the community of UNIMAS. Find your next desired items with just a click!
+        </div>
+        <el-button round color="#0F5841" style="margin: 20px; border: none; background-color: rgba(255, 255, 255, 0.3); color: white; width: 350px;" size="large"><RouterLink to="/register" style="color: white;">Don’t have an account? Signup here</RouterLink></el-button>
+      </div>
+      </el-col>
+    </el-row>
+  </el-form>
+</template>
+
+<style scoped>
+::v-deep(.el-form-item__label) {
+    font-size: large !important;;
+    color: #0F5841 !important;
+    font-weight: 400;
+}
+</style>
