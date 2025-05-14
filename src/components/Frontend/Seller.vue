@@ -1,100 +1,88 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useProductStore } from '@/stores/productStore'
-import { options } from '@/utils/constants'
-import { useToast } from 'vue-toastification'
-import router from '@/router'
-import { Delete, Edit, Plus, ZoomIn } from '@element-plus/icons-vue'
+import { onMounted, ref } from "vue";
+import { useProductStore } from "@/stores/productStore";
+import { options } from "@/utils/constants";
+import { useToast } from "vue-toastification";
+import router from "@/router";
+import { Delete, Edit, Plus, ZoomIn } from "@element-plus/icons-vue";
 
-const toast = useToast()
-const productStore = useProductStore()
+const toast = useToast();
+const productStore = useProductStore();
 
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
-const disabled = ref(false)
-const formRef = ref(null)
+const dialogImageUrl = ref("");
+const dialogVisible = ref(false);
+const disabled = ref(false);
+const formRef = ref(null);
 const form = ref({
   productImage: [],
-  productName: '',
-  productDescription: '',
+  productName: "",
+  productDescription: "",
   categoryID: 1,
-  productCondition: '',
+  productCondition: "",
   productPrice: 1,
   stockQty: 1,
-})
-const productList = ref([])
-const uploadRef = ref()
+});
+const productList = ref([]);
+const uploadRef = ref();
 const header = ref({
-  Authorization: 'Bearer ' + localStorage.getItem('accessToken'),
-})
+  Authorization: "Bearer " + localStorage.getItem("accessToken"),
+});
 
 const handleRemove = (file) => {
-  console.log(file)
-}
+  console.log(file);
+};
 
 const handlePictureCardPreview = () => {
   //   dialogImageUrl.value = file.url!
-  dialogVisible.value = true
-}
+  dialogVisible.value = true;
+};
 
 const addProduct = async () => {
-  try {
-    await formRef.value.validate()
+  await formRef.value.validate();
 
-    if (!form.value.productImage || form.value.productImage.length === 0) {
-      toast.warning('No file selected')
-      return
-    }
-
-    const payload = {
-      ProductImage: form.value.productImage[0].raw,
-      ProductName: form.value.productName,
-      ProductDescription: form.value.productDescription,
-      CategoryID: form.value.categoryID,
-      ProductCondition: form.value.productCondition,
-      ProductPrice: parseFloat(form.value.productPrice),
-      StockQty: parseInt(form.value.stockQty),
-    }
-    const response = await productStore.addProduct(payload)
-    if (response.code === 200) {
-      toast.success('Add Successfully!')
-    }
-    setTimeout(() => {
-      router.go(0)
-    }, 2000)
-  } catch (error) {
-    toast.error(error)
+  if (!form.value.productImage || form.value.productImage.length === 0) {
+    toast.warning("No file selected");
+    return;
   }
-}
+
+  const payload = {
+    ProductImage: form.value.productImage[0].raw,
+    ProductName: form.value.productName,
+    ProductDescription: form.value.productDescription,
+    CategoryID: form.value.categoryID,
+    ProductCondition: form.value.productCondition,
+    ProductPrice: parseFloat(form.value.productPrice),
+    StockQty: parseInt(form.value.stockQty),
+  };
+  const response = await productStore.addProduct(payload);
+  if (response.code === 200) {
+    toast.success("Add Successfully!");
+  }
+  setTimeout(() => {
+    router.go(0);
+  }, 2000);
+};
 
 const deleteProduct = async (productID) => {
-  try {
-    const payload = {
-      productID: productID,
-    }
-    const response = await productStore.deleteProduct(payload)
-    if (response.code === 200) {
-      toast.success('Delete Successfully!')
-    }
-    setTimeout(() => {
-      router.go(0)
-    }, 2000)
-  } catch (error) {
-    toast.error(error)
+  const payload = {
+    productID: productID,
+  };
+  const response = await productStore.deleteProduct(payload);
+  if (response.code === 200) {
+    toast.success("Delete Successfully!");
   }
-}
+  setTimeout(() => {
+    router.go(0);
+  }, 2000);
+};
 
 const fetchSpecificProductList = async () => {
-  try {
-    productList.value = await productStore.getSpecificProductList()
-  } catch (error) {
-    toast.error(error)
-  }
-}
+  productList.value = await productStore.getSpecificProductList();
+};
 
 onMounted(async () => {
-  await fetchSpecificProductList()
-})
+  await fetchSpecificProductList();
+});
 </script>
 
 <template>
@@ -129,12 +117,21 @@ onMounted(async () => {
         </el-row>
         <el-row style="border-bottom: 2px solid #0f5841; padding-bottom: 10px">
           <el-col :span="12">
-            <div style="color: #0f5841; font-size: 1.2rem; text-align: center; font-weight: 500">
+            <div
+              style="
+                color: #0f5841;
+                font-size: 1.2rem;
+                text-align: center;
+                font-weight: 500;
+              "
+            >
               Product
             </div>
           </el-col>
           <el-col :span="6">
-            <div style="color: #0f5841; font-size: 1.2rem; font-weight: 500">Stock</div>
+            <div style="color: #0f5841; font-size: 1.2rem; font-weight: 500">
+              Stock
+            </div>
           </el-col>
           <el-col :span="6"> </el-col>
         </el-row>
@@ -149,8 +146,19 @@ onMounted(async () => {
           "
         >
           <el-col :span="12">
-            <div style="display: flex; align-items: center; gap: 10px; margin: 0 0 0 30px">
-                           <img style="width: 150px" src="https://localhost:7047/ProductImages/1.png" alt="" />
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin: 0 0 0 30px;
+              "
+            >
+              <img
+                style="width: 150px"
+                src="https://localhost:7047/ProductImages/1.png"
+                alt=""
+              />
               <div
                 style="
                   display: flex;
@@ -165,14 +173,22 @@ onMounted(async () => {
               </div>
             </div>
           </el-col>
-          <el-col :span="6" style="align-content: space-evenly; justify-items: center">
+          <el-col
+            :span="6"
+            style="align-content: space-evenly; justify-items: center"
+          >
             <div style="display: flex; align-items: center; gap: 10px">
-              <div style="color: #0f5841; font-size: 1.2rem">{{ item.stockQty }}</div>
+              <div style="color: #0f5841; font-size: 1.2rem">
+                {{ item.stockQty }}
+              </div>
             </div>
           </el-col>
           <el-col :span="6" style="align-content: space-evenly">
             <RouterLink
-              :to="{ name: 'EditSpecificProduct', query: { id: item.productID } }"
+              :to="{
+                name: 'EditSpecificProduct',
+                query: { id: item.productID },
+              }"
               style="color: white"
               ><el-button
                 round
@@ -184,7 +200,8 @@ onMounted(async () => {
                   width: 120px;
                 "
                 size="large"
-                ><el-icon style="margin-right: 8px"><Edit /></el-icon>Edit</el-button
+                ><el-icon style="margin-right: 8px"><Edit /></el-icon
+                >Edit</el-button
               ></RouterLink
             >
             <el-button
@@ -198,7 +215,8 @@ onMounted(async () => {
               "
               size="large"
               @click="deleteProduct(item.productID)"
-              ><el-icon style="margin-right: 8px"><Delete /></el-icon>Delete</el-button
+              ><el-icon style="margin-right: 8px"><Delete /></el-icon
+              >Delete</el-button
             >
           </el-col>
         </el-row>
@@ -246,7 +264,11 @@ onMounted(async () => {
 
             <template #file="{ file }">
               <div>
-                <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                <img
+                  class="el-upload-list__item-thumbnail"
+                  :src="file.url"
+                  alt=""
+                />
                 <span class="el-upload-list__item-actions">
                   <span
                     class="el-upload-list__item-preview"
@@ -322,7 +344,12 @@ onMounted(async () => {
             v-model="form.categoryID"
             placeholder="Select your Item Category"
             size="large"
-            style="border-radius: 6px; width: 100%; height: 30px; align-items: center"
+            style="
+              border-radius: 6px;
+              width: 100%;
+              height: 30px;
+              align-items: center;
+            "
           >
             <el-option
               v-for="item in options"
@@ -331,8 +358,22 @@ onMounted(async () => {
               :value="item.value"
             />
           </el-select>
-          <div style="display: flex; flex-direction: column; text-align: left; width: 100%">
-            <div style="color: #0f5841; font-size: 1.2rem; margin-top: 20px; font-weight: 500">
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              text-align: left;
+              width: 100%;
+            "
+          >
+            <div
+              style="
+                color: #0f5841;
+                font-size: 1.2rem;
+                margin-top: 20px;
+                font-weight: 500;
+              "
+            >
               Product Condition
             </div>
             <div style="width: 100%">
@@ -344,7 +385,10 @@ onMounted(async () => {
                 <el-radio-button label="Brand New" value="Brand New" />
                 <el-radio-button label="Like New" value="Like New" />
                 <el-radio-button label="Gently Used" value="Gently Used" />
-                <el-radio-button label="Moderately Used" value="Moderately Used" />
+                <el-radio-button
+                  label="Moderately Used"
+                  value="Moderately Used"
+                />
                 <el-radio-button label="Heavily Used" value="Heavily Used" />
               </el-radio-group>
             </div>
@@ -407,11 +451,10 @@ onMounted(async () => {
 
 <style scoped>
 .el-button + .el-button {
-    margin-left: 0 !important;
+  margin-left: 0 !important;
 }
 
 .el-col-12 {
   max-width: 100% !important;
 }
-
 </style>
