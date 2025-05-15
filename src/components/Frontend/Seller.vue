@@ -154,11 +154,7 @@ onMounted(async () => {
                 margin: 0 0 0 30px;
               "
             >
-              <img
-                style="width: 150px"
-                src="https://localhost:7047/ProductImages/1.png"
-                alt=""
-              />
+              <img style="width: 150px" :src="item.productImage" alt="" />
               <div
                 style="
                   display: flex;
