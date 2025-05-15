@@ -6,6 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 import { options } from "@/utils/constants";
 import { useToast } from "vue-toastification";
 import { ArrowLeftBold, Delete, Plus, ZoomIn } from "@element-plus/icons-vue";
+import { genFileId } from "element-plus";
 
 const toast = useToast();
 const route = useRoute();
@@ -22,6 +23,7 @@ const form = ref({
   productPrice: "",
   stockQty: "",
 });
+const uploadRef = ref();
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 const disabled = ref(false);
@@ -29,14 +31,15 @@ const disabled = ref(false);
 const updateProduct = async () => {
   await formRef.value.validate();
 
-  console.log(
-    form.value.productImage.filter((file) => file.status !== "success")[0].raw
-  );
+  const imageObj = form.value.productImage?.[0];
+  const isFile = imageObj && imageObj.raw instanceof File;
+
   const payload = {
     productID: Number(route.query.id),
-    productImage: form.value.productImage.filter(
-      (file) => file.status !== "success"
-    )[0]?.raw,
+    ProductImageFile: isFile ? imageObj.raw : null,
+    ProductImageUrl: !isFile
+      ? imageObj.url.substring(imageObj.url.indexOf("ProductImages"))
+      : null,
     productName: form.value.productName,
     productDescription: form.value.productDescription,
     categoryID: form.value.categoryID,
@@ -86,13 +89,20 @@ const fetchProductDetail = async () => {
   });
 };
 
-const handleRemove = (file) => {
-  console.log(file);
+const handleRemove = () => {
+  uploadRef.value.clearFiles();
 };
 
-const handlePictureCardPreview = () => {
-  //   dialogImageUrl.value = file.url!
+const handlePictureCardPreview = (uploadFile) => {
+  dialogImageUrl.value = uploadFile.url;
   dialogVisible.value = true;
+};
+
+const handleExceed = (files) => {
+  uploadRef.value.clearFiles();
+  const file = files[0];
+  file.uid = genFileId();
+  uploadRef.value.handleStart(file);
 };
 
 onMounted(async () => {
@@ -132,8 +142,12 @@ onMounted(async () => {
       </el-row>
       <el-upload
         v-model:file-list="form.productImage"
+        ref="uploadRef"
         list-type="picture-card"
         :auto-upload="false"
+        :limit="1"
+        :on-preview="handlePictureCardPreview"
+        :on-exceed="handleExceed"
       >
         <el-icon><Plus /></el-icon>
 
@@ -147,23 +161,32 @@ onMounted(async () => {
             <span class="el-upload-list__item-actions">
               <span
                 class="el-upload-list__item-preview"
-                @click="handlePictureCardPreview()"
+                @click="handlePictureCardPreview(file)"
               >
                 <el-icon><zoom-in /></el-icon>
               </span>
               <span
                 v-if="!disabled"
                 class="el-upload-list__item-delete"
-                @click="handleRemove(file)"
+                @click="handleRemove()"
               >
                 <el-icon><Delete /></el-icon>
               </span>
             </span>
           </div>
         </template>
+        <template #tip>
+          <div class="el-upload__tip text-red">
+            limit 1 file, new file will cover the old file
+          </div>
+        </template>
       </el-upload>
       <el-dialog v-model="dialogVisible">
-        <img w-full :src="dialogImageUrl" alt="Preview Image" />
+        <img
+          style="width: 600px; height: 600px; object-fit: cover"
+          :src="dialogImageUrl"
+          alt="Preview Image"
+        />
       </el-dialog>
       <div style="text-align: left">
         <div
