@@ -6,9 +6,11 @@ import { onMounted } from "vue";
 import { useUserStore } from "@/stores/userStore";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
+import { useLoadingStore } from "@/stores/loadingStore.js";
 
 const toast = useToast();
 const userStore = useUserStore();
+const loadingStore = useLoadingStore();
 const route = useRoute();
 const upload = ref();
 const formRef = ref(null);
@@ -230,6 +232,8 @@ onMounted(async () => {
         "
         size="large"
         @click="updateUserProfile"
+        :loading="loadingStore.loading"
+        :disabled="loadingStore.loading"
         >Save Changes</el-button
       >
     </el-row>

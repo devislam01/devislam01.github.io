@@ -7,12 +7,15 @@ import { options } from "@/utils/constants";
 import { useToast } from "vue-toastification";
 import { ArrowLeftBold, Delete, Plus, ZoomIn } from "@element-plus/icons-vue";
 import { genFileId } from "element-plus";
+import { useLoadingStore } from "@/stores/loadingStore.js";
 
 const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 
 const productStore = useProductStore();
+const loadingStore = useLoadingStore();
+
 const formRef = ref(null);
 const form = ref({
   productImage: [],
@@ -335,6 +338,8 @@ onMounted(async () => {
         "
         size="large"
         @click="updateProduct"
+        :loading="loadingStore.loading"
+        :disabled="loadingStore.loading"
         >Update Product</el-button
       >
     </el-col>

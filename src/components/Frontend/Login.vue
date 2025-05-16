@@ -5,8 +5,10 @@ import TopNavigation from "../Common/TopNavigation.vue";
 import { useUserStore } from "@/stores/userStore";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
+import { useLoadingStore } from "@/stores/loadingStore.js";
 
 const userStore = useUserStore();
+const loadingStore = useLoadingStore();
 const toast = useToast();
 const router = useRouter();
 const formRef = ref(null);
@@ -83,6 +85,8 @@ const loginUser = async () => {
         </div>
         <el-input
           v-model="form.password"
+          type="password"
+          show-password
           placeholder="Please enter your Password"
           style="height: 40px"
         ></el-input>
@@ -104,6 +108,8 @@ const loginUser = async () => {
           "
           size="large"
           @click="loginUser"
+          :loading="loadingStore.loading"
+          :disabled="loadingStore.loading"
           >Login</el-button
         >
       </el-col>
