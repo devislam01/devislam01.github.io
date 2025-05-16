@@ -71,7 +71,7 @@ const search = async () => {
                     >My Order</RouterLink
                   ></el-dropdown-item
                 >
-                <el-dropdown-item @click="logout" style="color: #0f5841"
+                <el-dropdown-item @click="logout" style="color: #0f5841; font-weight: 500;"
                   >Logout</el-dropdown-item
                 >
               </el-dropdown-menu>

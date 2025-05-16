@@ -6,12 +6,14 @@ import { ElMessage } from "element-plus";
 import { useProductStore } from "@/stores/productStore";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
+import router from "@/router";
 
 const productStore = useProductStore();
 const toast = useToast();
 const route = useRoute();
 
 const info = ref({
+  productID: "",
   productImage: [],
   productName: "",
   productDescription: "",
@@ -28,6 +30,7 @@ const sellerInfo = ref({
 
 const addToCart = () => {
   const product = {
+    id: info.value.productID,
     name: info.value.productName,
     price: info.value.productPrice,
     condition: info.value.productCondition,
@@ -37,13 +40,15 @@ const addToCart = () => {
   };
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const existing = cart.find((item) => item.id === product.id);
 
-  if (existing) {
-    existing.quantity += product.quantity;
-  } else {
-    cart.push(product);
-  }
+  // if (Array.isArray(cart)) {
+    const existingItem = cart.find(item => item.id === product.id);
+    
+    if (existingItem) {
+      existingItem.quantity += product.quantity;
+    } else {
+      cart.push(product);
+    }
 
   localStorage.setItem("cart", JSON.stringify(cart));
   alert("Product added to cart!");
@@ -52,6 +57,7 @@ const addToCart = () => {
     type: "success",
   });
 };
+
 const num = ref(1);
 const handleChange = (value) => {
   console.log(value);
@@ -64,6 +70,7 @@ const fetchProductDetail = async () => {
     });
 
     info.value = response.productDetail;
+    info.value.productID = Number(route.query.id);
     sellerInfo.value = response.sellerDetail;
   } catch (error) {
     toast.error(error);

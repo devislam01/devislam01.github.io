@@ -150,8 +150,9 @@ onMounted(async () => {
               style="
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 40px;
                 margin: 0 0 0 30px;
+                justify-content: center;
               "
             >
               <img style="width: 150px" :src="item.productImage" alt="" />

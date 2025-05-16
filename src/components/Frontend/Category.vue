@@ -31,6 +31,12 @@ const applyFilter = async () => {
   productList.value = response.data;
 };
 
+const clearFilter = async () => {
+  const response = await productStore.getProductList();
+  productList.value = response.data;
+  pagination.value = response.pagination;
+};
+
 const changePage = async () => {
   const payload = {
     pageNumber: pagination.value.pageNumber,
@@ -134,13 +140,14 @@ onMounted(async () => {
               width: 100%;
             "
             size="large"
+            @click="clearFilter"
             >Clear Filter</el-button
           >
         </div>
       </el-card>
     </el-col>
     <el-col :span="19" style="">
-      <el-row :gutter="20" style="">
+      <el-row :gutter="20" style="justify-content: center;">
         <el-col
           v-for="item in productList"
           :key="item.productID"
