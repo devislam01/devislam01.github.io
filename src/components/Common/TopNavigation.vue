@@ -21,8 +21,8 @@ const search = async () => {
       <el-col :span="9">
         <el-menu-item index="0">
           <img
-            style="width: 350px"
-            src="/src/assets/SecondLifeUnimas.png"
+            style="width: 275px; margin-top: 10px;"
+            src="/src/assets/PrelovedNoBack.png"
             alt="Element logo"
           />
         </el-menu-item>

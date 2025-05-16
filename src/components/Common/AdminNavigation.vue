@@ -27,8 +27,8 @@ const handleClose = (key, keyPath) => {
     </el-row> -->
     <el-row>
         <img
-                style="width: 100%; "
-                src="/src/assets/SecondLifeUnimas.png"
+                style="width: 100%;"
+                src="/src/assets/PrelovedNoBack.png"
                 alt="Element logo"
             />
         <el-col :span="24" style="display: flex; flex-direction: column; height: 91vh;">
