@@ -155,7 +155,7 @@ onMounted(async () => {
                 justify-content: center;
               "
             >
-              <img style="width: 150px" :src="item.productImage" alt="" />
+              <img style="width: 150px;height: 150px; object-fit: contain;" :src="item.productImage" alt="" />
               <div
                 style="
                   display: flex;
@@ -166,7 +166,7 @@ onMounted(async () => {
                 "
               >
                 <div>{{ item.productName }}</div>
-                <div>{{ item.productPrice }}</div>
+                <div>RM {{ item.productPrice }}</div>
               </div>
             </div>
           </el-col>

@@ -147,7 +147,7 @@ onMounted(async () => {
       </el-card>
     </el-col>
     <el-col :span="19" style="">
-      <el-row :gutter="20" style="justify-content: center;">
+      <el-row :gutter="20" style="">
         <el-col
           v-for="item in productList"
           :key="item.productID"
