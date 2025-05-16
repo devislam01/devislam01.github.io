@@ -1,19 +1,18 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import Breadcrumb from "../Common/Breadcrumb.vue";
 import { ShoppingCart } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { useProductStore } from "@/stores/productStore";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import router from "@/router";
+import { claimTypes } from "@/utils/constants.js";
 
 const productStore = useProductStore();
 const toast = useToast();
 const route = useRoute();
 
 const info = ref({
-  productID: "",
   productImage: [],
   productName: "",
   productDescription: "",
@@ -27,10 +26,18 @@ const sellerInfo = ref({
   completedOrders: 0,
   joinTime: "",
 });
+const num = ref(1);
+
+const token = localStorage.getItem("accessToken") || "";
+const userID = JSON.parse(atob(token.split(".")[1]))[claimTypes.userId];
+const rawCart = localStorage.getItem("cart");
+const cartObj = rawCart ? JSON.parse(rawCart) : {};
+const userCart = cartObj[userID] || [];
 
 const addToCart = () => {
   const product = {
-    id: info.value.productID,
+    productID: info.value.productID,
+    userID: JSON.parse(atob(token.split(".")[1]))[claimTypes.userId] || null,
     name: info.value.productName,
     price: info.value.productPrice,
     condition: info.value.productCondition,
@@ -39,29 +46,34 @@ const addToCart = () => {
     image: info.value.productImage,
   };
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const existing = userCart.find(
+    (item) => item.productID === product.productID
+  );
+  if (existing) {
+    existing.quantity += product.quantity;
+  } else {
+    userCart.push(product);
+  }
 
-  // if (Array.isArray(cart)) {
-    const existingItem = cart.find(item => item.id === product.id);
-    
-    if (existingItem) {
-      existingItem.quantity += product.quantity;
-    } else {
-      cart.push(product);
-    }
+  cartObj[userID] = userCart;
+  localStorage.setItem("cart", JSON.stringify(cartObj));
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-  alert("Product added to cart!");
   ElMessage({
     message: "Item successfully added to your cart!",
     type: "success",
   });
 };
 
-const num = ref(1);
 const handleChange = (value) => {
   console.log(value);
 };
+
+watchEffect(() => {
+  if (num.value > info.value.stockQty) {
+    num.value = info.value.stockQty;
+    toast.warning(`Limit ${info.value.stockQty} stock only `);
+  }
+});
 
 const fetchProductDetail = async () => {
   try {
@@ -70,7 +82,6 @@ const fetchProductDetail = async () => {
     });
 
     info.value = response.productDetail;
-    info.value.productID = Number(route.query.id);
     sellerInfo.value = response.sellerDetail;
   } catch (error) {
     toast.error(error);
