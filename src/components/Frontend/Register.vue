@@ -51,7 +51,7 @@ const registerUser = async () => {
   <el-form ref="formRef" :model="form" :rules="rules">
     <el-row
       style="
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
         border-radius: 15px;
         margin: 50px 0 0 0;
         width: 75%;
@@ -87,6 +87,8 @@ const registerUser = async () => {
         </div>
         <el-input
           v-model="form.password"
+          type="password"
+          show-password
           placeholder="Please enter your Password"
           style="height: 40px"
         ></el-input>
@@ -100,6 +102,8 @@ const registerUser = async () => {
         </div>
         <el-input
           v-model="form.confirmPassword"
+          type="password"
+          show-password
           placeholder="Please enter your Confirm Password"
           style="height: 40px"
         ></el-input>
