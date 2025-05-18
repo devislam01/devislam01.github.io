@@ -38,12 +38,12 @@ const addToCart = () => {
   const product = {
     productID: info.value.productID,
     userID: JSON.parse(atob(token.split(".")[1]))[claimTypes.userId] || null,
-    name: info.value.productName,
-    price: info.value.productPrice,
-    condition: info.value.productCondition,
+    productName: info.value.productName,
+    productPrice: info.value.productPrice,
+    productCondition: info.value.productCondition,
     category: info.value.categoryName,
     quantity: num.value,
-    image: info.value.productImage,
+    productImage: info.value.productImage,
   };
 
   const existing = userCart.find(
