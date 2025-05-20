@@ -16,7 +16,11 @@ export const useUserStore = defineStore("users", {
       localStorage.setItem("refreshToken", resp.data.refreshToken);
     },
     async registerUser(payload) {
-      await axios.post("/User/register", payload);
+      await axios.post("/User/register", payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
     },
     async getUserProfile() {
       const response = await axios.get(`/user/getUserProfile`);

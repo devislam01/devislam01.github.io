@@ -52,7 +52,7 @@ const loginUser = async () => {
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
         border-radius: 15px;
         margin: 50px 0 0 0;
-        width: 1122px;
+        width: 75%;
         justify-self: center;
       "
     >
@@ -106,7 +106,7 @@ const loginUser = async () => {
             margin: 30px 0 20px 0;
             background-image: linear-gradient(to right, #0f5841, #87ab9f);
             border: none;
-            width: 490px;
+            width: 100%;
           "
           size="large"
           @click="loginUser"

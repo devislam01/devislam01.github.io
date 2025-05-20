@@ -13,8 +13,10 @@ const router = useRouter();
 const formRef = ref(null);
 const active = ref(0);
 
+const fileList = ref([]);
+
 const next = async () => {
-  await formRef.value.validate();
+  // await formRef.value.validate();
   if (active.value++ > 2) active.value = 0;
 };
 
@@ -28,7 +30,15 @@ const form = ref({
   address: "",
   userGender: "",
   college: "",
+  paymentQRCode: "",
 });
+
+const handleFileChange = async (file) => {
+  // Simulate uploading to server or use your own upload logic
+  const uploadedUrl = await uploadToYourServer(file); // replace with actual upload logic
+  form.value.paymentQRCode = uploadedUrl;
+  return false;
+};
 
 const rules = ref({
   email: [
@@ -63,8 +73,14 @@ const registerUser = async () => {
     await formRef.value.validate();
 
     const payload = {
-      email: form.value.email,
-      password: form.value.password,
+      Email: form.value.email,
+      Password: form.value.password,
+      Username: form.value.username,
+      PhoneNumber: form.value.phoneNumber,
+      Address: form.value.address,
+      UserGender: form.value.userGender,
+      College: form.value.college,
+      PaymentQRCode: form.value.paymentQRCode,
     };
     const response = await userStore.registerUser(payload);
 
@@ -157,7 +173,7 @@ const registerUser = async () => {
               margin: 30px 0 20px 0;
               background-image: linear-gradient(to right, #0f5841, #87ab9f);
               border: none;
-              width: 490px;
+              width: 100%;
             "
             size="large"
             @click="next"
@@ -210,13 +226,20 @@ const registerUser = async () => {
                 placeholder="Please choose your Residential College"
                 style="width: 100%; height: 40px"
               >
+                <el-option label="Dahlia College" value="Dahlia College" />
                 <el-option
                   label="Allamanda College"
                   value="Allamanda College"
                 />
                 <el-option label="Cempaka College" value="Cempaka College" />
-                <el-option label="Tun Ahmad Zaidi College" value="Tun Ahmad Zaidi College" />
-                <el-option label="Rafflesia College" value="Rafflesia College" />
+                <el-option
+                  label="Tun Ahmad Zaidi College"
+                  value="Tun Ahmad Zaidi College"
+                />
+                <el-option
+                  label="Rafflesia College"
+                  value="Rafflesia College"
+                />
                 <el-option label="Kasturi College" value="Kasturi College" />
                 <el-option label="Kenanga College" value="Kenanga College" />
                 <el-option label="Seroja College" value="Seroja College" />
@@ -224,21 +247,63 @@ const registerUser = async () => {
               </el-select>
             </el-form-item>
           </div>
-          <el-button
-            round
-            color="#0F5841"
+          <div style="text-align: left">
+            <el-form-item label="QR Code" prop="paymentQRCode">
+              <el-upload
+                v-model:file-list="form.paymentQRCode"
+                :before-upload="handleFileChange"
+                ref="upload"
+                class="upload-demo"
+                style="width: 100%"
+                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                :limit="1"
+                :on-exceed="handleExceed"
+                :auto-upload="false"
+              >
+                <template #trigger>
+                  <el-button type="primary">Select Receiving QR Code</el-button>
+                </template>
+                <template #tip>
+                  <div class="el-upload__tip text-red">
+                    limit 1 file, new file will cover the old file
+                  </div>
+                </template>
+              </el-upload>
+            </el-form-item>
+          </div>
+          <div
             style="
+              display: flex;
+              justify-content: space-between;
               margin: 30px 0 20px 0;
-              background-image: linear-gradient(to right, #0f5841, #87ab9f);
-              border: none;
-              width: 490px;
             "
-            size="large"
-            @click="registerUser"
-            :loading="loadingStore.loading"
-            :disabled="loadingStore.loading"
-            >Register</el-button
           >
+            <el-button
+              @click="active--"
+              round
+              color="white"
+              style="border: 2px solid #0f5841; width: 48%"
+              size="large"
+            >
+              Previous
+            </el-button>
+
+            <el-button
+              round
+              color="#0F5841"
+              style="
+                background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                border: none;
+                width: 48%;
+              "
+              size="large"
+              @click="registerUser"
+              :loading="loadingStore.loading"
+              :disabled="loadingStore.loading"
+            >
+              Register
+            </el-button>
+          </div>
         </div>
       </el-col>
       <el-col
