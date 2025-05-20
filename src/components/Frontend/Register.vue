@@ -13,8 +13,6 @@ const router = useRouter();
 const formRef = ref(null);
 const active = ref(0);
 
-const fileList = ref([]);
-
 const next = async () => {
   // await formRef.value.validate();
   if (active.value++ > 2) active.value = 0;
@@ -35,8 +33,8 @@ const form = ref({
 
 const handleFileChange = async (file) => {
   // Simulate uploading to server or use your own upload logic
-  const uploadedUrl = await uploadToYourServer(file); // replace with actual upload logic
-  form.value.paymentQRCode = uploadedUrl;
+  // replace with actual upload logic
+  form.value.paymentQRCode = await uploadToYourServer(file);
   return false;
 };
 
@@ -72,6 +70,11 @@ const registerUser = async () => {
   try {
     await formRef.value.validate();
 
+    if (!form.value.paymentQRCode || form.value.paymentQRCode.length === 0) {
+      toast.warning("No file selected");
+      return;
+    }
+
     const payload = {
       Email: form.value.email,
       Password: form.value.password,
@@ -79,8 +82,8 @@ const registerUser = async () => {
       PhoneNumber: form.value.phoneNumber,
       Address: form.value.address,
       UserGender: form.value.userGender,
-      College: form.value.college,
-      PaymentQRCode: form.value.paymentQRCode,
+      ResidentialCollege: form.value.college,
+      QRCode: form.value.paymentQRCode[0].raw,
     };
     const response = await userStore.registerUser(payload);
 
@@ -251,13 +254,10 @@ const registerUser = async () => {
             <el-form-item label="QR Code" prop="paymentQRCode">
               <el-upload
                 v-model:file-list="form.paymentQRCode"
-                :before-upload="handleFileChange"
-                ref="upload"
                 class="upload-demo"
                 style="width: 100%"
-                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                action="#"
                 :limit="1"
-                :on-exceed="handleExceed"
                 :auto-upload="false"
               >
                 <template #trigger>
