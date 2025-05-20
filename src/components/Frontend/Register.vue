@@ -11,10 +11,23 @@ const loadingStore = useLoadingStore();
 const toast = useToast();
 const router = useRouter();
 const formRef = ref(null);
+const active = ref(0);
+
+const next = async () => {
+  await formRef.value.validate();
+  if (active.value++ > 2) active.value = 0;
+};
+
 const form = ref({
   email: "",
   password: "",
   confirmPassword: "",
+  username: "",
+  phoneNumber: "",
+  gender: "",
+  address: "",
+  userGender: "",
+  college: "",
 });
 
 const rules = ref({
@@ -23,6 +36,25 @@ const rules = ref({
   ],
   password: [
     { required: true, message: "Please input Password", trigger: "blur" },
+  ],
+  username: [
+    { required: true, message: "Please input Username", trigger: "blur" },
+  ],
+  phoneNumber: [
+    { required: true, message: "Please input Phone Number", trigger: "blur" },
+  ],
+  address: [
+    { required: true, message: "Please input Address", trigger: "blur" },
+  ],
+  userGender: [
+    { required: true, message: "Please select your gender", trigger: "change" },
+  ],
+  college: [
+    {
+      required: true,
+      message: "Please choose your Residential College",
+      trigger: "change",
+    },
   ],
 });
 
@@ -48,80 +80,166 @@ const registerUser = async () => {
 
 <template>
   <Breadcrumb></Breadcrumb>
-  <el-form ref="formRef" :model="form" :rules="rules">
+  <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
     <el-row
       style="
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
         border-radius: 15px;
-        margin: 50px 0 0 0;
+        margin: 30px 0 0 0;
         width: 75%;
         justify-self: center;
       "
     >
-      <el-col :span="12" style="padding: 30px; align-content: center">
-        <div style="text-align: left">
+      <el-col :span="12" style="padding: 30px">
+        <div style="text-align: left; width: 100%">
           <div
             style="
-              float: left;
               font-weight: bold;
               color: #0f5841;
               font-size: 2rem;
-              width: 100%;
+              margin-bottom: 20px;
             "
           >
             Signup
           </div>
-          <div style="float: left; margin: 30px 0 -20px 0">
-            <el-form-item label="Email" prop="email"></el-form-item>
-          </div>
+          <el-steps
+            :active="active"
+            finish-status="success"
+            style="width: 50%; justify-self: center"
+          >
+            <el-step title="Step 1" />
+            <el-step title="Step 2" />
+          </el-steps>
         </div>
-        <el-input
-          v-model="form.email"
-          placeholder="Please enter your Email"
-          style="height: 40px"
-        ></el-input>
-        <div style="text-align: left">
-          <div style="float: left; margin: 30px 0 -20px 0">
-            <el-form-item label="Password" prop="password"></el-form-item>
-          </div>
-        </div>
-        <el-input
-          v-model="form.password"
-          type="password"
-          show-password
-          placeholder="Please enter your Password"
-          style="height: 40px"
-        ></el-input>
-        <div style="text-align: left">
-          <div style="float: left; margin: 30px 0 -20px 0">
-            <el-form-item
-              label="Confirm Password"
-              prop="password"
+        <div v-if="active === 0">
+          <div
+            style="
+              float: left;
+              margin: 10px 0 0 0;
+              width: 100%;
+              text-align: left;
+            "
+          >
+            <el-form-item label="Email" prop="email"
+              ><el-input
+                v-model="form.email"
+                placeholder="Please enter your Email"
+                style="height: 40px"
+              ></el-input
             ></el-form-item>
           </div>
+          <div style="width: 100%; text-align: left">
+            <el-form-item label="Password" prop="password">
+              <el-input
+                v-model="form.password"
+                type="password"
+                show-password
+                placeholder="Please enter your Password"
+                style="height: 40px"
+              ></el-input>
+            </el-form-item>
+          </div>
+          <div style="width: 100%; text-align: left">
+            <el-form-item label="Confirm Password" prop="password">
+              <el-input
+                v-model="form.confirmPassword"
+                type="password"
+                show-password
+                placeholder="Please enter your Confirm Password"
+                style="height: 40px"
+              ></el-input>
+            </el-form-item>
+          </div>
+          <el-button
+            round
+            color="#0F5841"
+            style="
+              margin: 30px 0 20px 0;
+              background-image: linear-gradient(to right, #0f5841, #87ab9f);
+              border: none;
+              width: 490px;
+            "
+            size="large"
+            @click="next"
+            >Next step</el-button
+          >
         </div>
-        <el-input
-          v-model="form.confirmPassword"
-          type="password"
-          show-password
-          placeholder="Please enter your Confirm Password"
-          style="height: 40px"
-        ></el-input>
-        <el-button
-          round
-          color="#0F5841"
-          style="
-            margin: 30px 0 20px 0;
-            background-image: linear-gradient(to right, #0f5841, #87ab9f);
-            border: none;
-            width: 490px;
-          "
-          size="large"
-          @click="registerUser"
-          :loading="loadingStore.loading"
-          :disabled="loadingStore.loading"
-          >Register</el-button
-        >
+        <div v-if="active === 1">
+          <div style="margin: 10px 0 0 0; width: 100%; text-align: left">
+            <el-form-item label="Username" prop="username">
+              <el-input
+                v-model="form.username"
+                type="username"
+                placeholder="Please enter your Username"
+                style="height: 40px"
+              ></el-input>
+            </el-form-item>
+          </div>
+          <div style="width: 100%; text-align: left">
+            <el-form-item label="Phone Number" prop="phoneNumber">
+              <el-input
+                v-model="form.phoneNumber"
+                type="phoneNumber"
+                placeholder="Please enter your Phone Number"
+                style="height: 40px"
+              ></el-input>
+            </el-form-item>
+          </div>
+          <div style="margin: 10px 0 0 0; width: 100%; text-align: left">
+            <el-form-item label="Gender" prop="userGender">
+              <el-radio-group v-model="form.userGender">
+                <el-radio value="1">Male</el-radio>
+                <el-radio value="2">Female</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </div>
+          <div style="width: 100%; text-align: left">
+            <el-form-item label="Address" prop="address">
+              <el-input
+                v-model="form.address"
+                type="address"
+                placeholder="Please enter your Address"
+                style="height: 40px"
+              ></el-input>
+            </el-form-item>
+          </div>
+          <div style="width: 100%; text-align: left">
+            <el-form-item label="Residential College" prop="college">
+              <el-select
+                v-model="form.college"
+                placeholder="Please choose your Residential College"
+                style="width: 100%; height: 40px"
+              >
+                <el-option
+                  label="Allamanda College"
+                  value="Allamanda College"
+                />
+                <el-option label="Cempaka College" value="Cempaka College" />
+                <el-option label="Tun Ahmad Zaidi College" value="Tun Ahmad Zaidi College" />
+                <el-option label="Rafflesia College" value="Rafflesia College" />
+                <el-option label="Kasturi College" value="Kasturi College" />
+                <el-option label="Kenanga College" value="Kenanga College" />
+                <el-option label="Seroja College" value="Seroja College" />
+                <el-option label="Sakura College" value="Sakura College" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <el-button
+            round
+            color="#0F5841"
+            style="
+              margin: 30px 0 20px 0;
+              background-image: linear-gradient(to right, #0f5841, #87ab9f);
+              border: none;
+              width: 490px;
+            "
+            size="large"
+            @click="registerUser"
+            :loading="loadingStore.loading"
+            :disabled="loadingStore.loading"
+            >Register</el-button
+          >
+        </div>
       </el-col>
       <el-col
         :span="12"

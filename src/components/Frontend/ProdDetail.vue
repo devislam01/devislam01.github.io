@@ -58,10 +58,7 @@ const addToCart = () => {
   cartObj[userID] = userCart;
   localStorage.setItem("cart", JSON.stringify(cartObj));
 
-  ElMessage({
-    message: "Item successfully added to your cart!",
-    type: "success",
-  });
+  toast.success("Add to Cart Successfully!");
 };
 
 const handleChange = (value) => {
@@ -195,6 +192,26 @@ onMounted(async () => {
           "
         >
           {{ info.categoryName }}
+        </div>
+        <div
+          style="
+            font-weight: 400;
+            color: #0f5841;
+            font-size: 1.1rem;
+            margin-bottom: -5px;
+          "
+        >
+          Stock Quantity
+        </div>
+        <div
+          style="
+            font-weight: 400;
+            color: #0f5841;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+          "
+        >
+          {{ info.stockQty }}
         </div>
         <div style="font-weight: 400; color: #0f5841; font-size: 1.6rem">
           Quantity:

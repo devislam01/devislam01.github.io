@@ -60,19 +60,6 @@ const changeSize = async () => {
 };
 
 onMounted(async () => {
-  if (route.query.showMessageBox === "true") {
-    ElMessageBox.confirm(
-      "You may proceed to your profile page now to complete your personal information, or do it later at your convenience.",
-      "Welcome to SecondLife Unimas!",
-      {
-        confirmButtonText: "Go to Profile",
-        cancelButtonText: "Do It Later",
-      }
-    ).then(() => {
-      router.push("/profile");
-    });
-  }
-
   await fetchProductList();
 });
 </script>

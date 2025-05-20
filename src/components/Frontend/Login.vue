@@ -46,7 +46,7 @@ const loginUser = async () => {
 <template>
   <TopNavigation></TopNavigation>
   <Breadcrumb style="margin: 20px"></Breadcrumb>
-  <el-form ref="formRef" :model="form" :rules="rules">
+  <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
     <el-row
       style="
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
@@ -69,27 +69,29 @@ const loginUser = async () => {
           >
             Login
           </div>
-          <div style="float: left; margin: 30px 0 -20px 0">
-            <el-form-item label="Email" prop="email"></el-form-item>
-          </div>
         </div>
-        <el-input
-          v-model="form.email"
-          placeholder="Please enter your Email"
-          style="height: 40px"
-        ></el-input>
-        <div style="text-align: left">
-          <div style="float: left; margin: 30px 0 -20px 0">
-            <el-form-item label="Password" prop="password"></el-form-item>
-          </div>
+        <div
+          style="float: left; margin: 30px 0 0 0; width: 100%; text-align: left"
+        >
+          <el-form-item label="Email" prop="email"
+            ><el-input
+              v-model="form.email"
+              placeholder="Please enter your Email"
+              style="height: 40px"
+            ></el-input
+          ></el-form-item>
         </div>
-        <el-input
-          v-model="form.password"
-          type="password"
-          show-password
-          placeholder="Please enter your Password"
-          style="height: 40px"
-        ></el-input>
+        <div style="margin: 160px 0 0 0; width: 100%; text-align: left">
+          <el-form-item label="Password" prop="password">
+            <el-input
+              v-model="form.password"
+              type="password"
+              show-password
+              placeholder="Please enter your Password"
+              style="height: 40px"
+            ></el-input>
+          </el-form-item>
+        </div>
         <div style="text-align: right; margin: 5px 5px 0 0">
           <el-link type="success"
             ><RouterLink to="/forgetPassword" style="color: #0f5841"
