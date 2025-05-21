@@ -176,7 +176,7 @@ const registerUser = async () => {
             >Next step</el-button
           >
         </div>
-        <div v-else-if="active === 1">
+        <div v-if="active === 1">
           <div style="margin: 10px 0 0 0; width: 100%; text-align: left">
             <el-form-item label="Username" prop="username">
               <el-input
