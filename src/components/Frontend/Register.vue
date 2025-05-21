@@ -28,15 +28,8 @@ const form = ref({
   address: "",
   userGender: "",
   college: "",
-  paymentQRCode: "",
+  paymentQRCode: [],
 });
-
-const handleFileChange = async (file) => {
-  // Simulate uploading to server or use your own upload logic
-  // replace with actual upload logic
-  form.value.paymentQRCode = await uploadToYourServer(file);
-  return false;
-};
 
 const rules = ref({
   email: [
@@ -183,7 +176,7 @@ const registerUser = async () => {
             >Next step</el-button
           >
         </div>
-        <div v-if="active === 1">
+        <div v-else-if="active === 1">
           <div style="margin: 10px 0 0 0; width: 100%; text-align: left">
             <el-form-item label="Username" prop="username">
               <el-input
