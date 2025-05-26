@@ -40,3 +40,14 @@ export const claimTypes = {
   email: "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
   role: "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
 };
+
+export const paymentMethods = [
+  {
+    label: "Cash on Delivery",
+    value: 1,
+  },
+  {
+    label: "QR Code",
+    value: 2,
+  }
+]

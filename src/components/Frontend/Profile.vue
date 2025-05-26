@@ -8,6 +8,22 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useLoadingStore } from "@/stores/loadingStore.js";
 
+const dialogImageUrl = ref("");
+const dialogVisible = ref(false);
+
+const handleRemove = (file) => {
+  // Remove the file manually from form.productImage
+  form.value.paymentQRCode = form.value.paymentQRCode.filter(
+    (f) => f.uid !== file.uid
+  );
+  console.log("After remove:", form.value.paymentQRCode);
+};
+
+const handlePictureCardPreview = (uploadFile) => {
+  dialogImageUrl.value = uploadFile.url;
+  dialogVisible.value = true;
+};
+
 const toast = useToast();
 const userStore = useUserStore();
 const loadingStore = useLoadingStore();
@@ -35,6 +51,8 @@ const updateUserProfile = async () => {
       phoneNumber: form.value.phoneNumber,
       userGender: form.value.userGender,
       address: form.value.address,
+      ResidentialCollege: form.value.college,
+      QRCode: form.value.paymentQRCode[0].raw,
     };
     const response = await userStore.updateUserProfile(payload);
     if (response.code === 200) {
@@ -56,6 +74,14 @@ const fetchUserDetail = async () => {
     form.value.phoneNumber = response.phoneNumber;
     form.value.userGender = response.userGender;
     form.value.address = response.address;
+    form.value.college = response.residentialCollege;
+    form.value.paymentQRCode = [
+      {
+        name: "QR Code.jpg",
+        url: `${response.paymentQRCode}`, // full URL for preview
+        status: "finished",
+      },
+    ];
   } catch (error) {
     console.log(error);
   }
@@ -65,6 +91,7 @@ const handleExceed = (files) => {
   // upload.value!.clearFiles()
   const file = files[0];
   file.uid = genFileId();
+  toast.warning("You can only upload one QR code.");
   // upload.value!.handleStart(file)
 };
 
@@ -116,7 +143,7 @@ onMounted(async () => {
         </div>
         <el-input
           v-model="form.userName"
-          placeholder="Chin Khai Yang"
+          placeholder="Please enter your Username"
           style="height: 40px"
         ></el-input>
         <div style="text-align: left">
@@ -133,7 +160,7 @@ onMounted(async () => {
         </div>
         <el-input
           v-model="form.email"
-          placeholder="abc123@gmail.com"
+          placeholder="Please enter your Email"
           style="height: 40px"
         ></el-input>
         <div style="text-align: left">
@@ -150,7 +177,7 @@ onMounted(async () => {
         </div>
         <el-input
           v-model="form.phoneNumber"
-          placeholder="016-1234567"
+          placeholder="Please enter your Phone Number"
           style="height: 40px"
         ></el-input>
         <div style="text-align: left">
@@ -185,26 +212,98 @@ onMounted(async () => {
         </div>
         <el-input
           v-model="form.address"
-          placeholder="NO.100, Taman ABC, Sarawak"
+          placeholder="Please enter your Address"
           style="height: 40px"
         ></el-input>
+        <div style="text-align: left">
+          <div
+            style="
+              float: left;
+              color: #0f5841;
+              font-size: 1.2rem;
+              margin-top: 20px;
+            "
+          >
+            Residential College
+          </div>
+        </div>
+        <el-select
+          v-model="form.college"
+          placeholder="Please choose your Residential College"
+          style="height: 40px"
+        >
+          <el-option label="Dahlia College" value="Dahlia College" />
+          <el-option label="Allamanda College" value="Allamanda College" />
+          <el-option label="Cempaka College" value="Cempaka College" />
+          <el-option
+            label="Tun Ahmad Zaidi College"
+            value="Tun Ahmad Zaidi College"
+          />
+          <el-option label="Rafflesia College" value="Rafflesia College" />
+          <el-option label="Kasturi College" value="Kasturi College" />
+          <el-option label="Kenanga College" value="Kenanga College" />
+          <el-option label="Seroja College" value="Seroja College" />
+          <el-option label="Sakura College" value="Sakura College" />
+        </el-select>
       </el-col>
-      <el-col :span="8" style="padding: 30px">
-        <img
-          style="
-            width: 250px;
-            border-radius: 50%;
-            border: 2px solid #0f5841;
-            margin-top: 80px;
-          "
-          src="/src/assets/ProfilePic.jpg"
-          alt=""
-        />
+      <el-col :span="8" style="padding: 30px; align-content: center">
+        <el-upload
+          v-model:file-list="form.paymentQRCode"
+          list-type="picture-card"
+          ref="uploadRef"
+          :auto-upload="false"
+          :show-file-list="true"
+          action="https://localhost:7047/api/common/upload"
+          :headers="header"
+          name="PaymentQRCode"
+          style="justify-content: center"
+          :limit="1"
+          :on-exceed="handleExceed"
+        >
+          <el-icon><Plus /></el-icon>
+
+          <template #file="{ file }">
+            <div>
+              <img
+                class="el-upload-list__item-thumbnail"
+                :src="file.url"
+                alt=""
+              />
+              <span class="el-upload-list__item-actions">
+                <span
+                  class="el-upload-list__item-preview"
+                  @click="handlePictureCardPreview(file)"
+                >
+                  <el-icon><zoom-in /></el-icon>
+                </span>
+                <span
+                  v-if="!disabled"
+                  class="el-upload-list__item-delete"
+                  @click="handleRemove(file)"
+                >
+                  <el-icon><Delete /></el-icon>
+                </span>
+              </span>
+            </div>
+          </template>
+        </el-upload>
+        <el-dialog
+          v-model="dialogVisible"
+          style="align-content: center"
+        >
+          <div style="text-align: center">
+            <img
+              :src="dialogImageUrl"
+              alt="Preview Image"
+              style=" width: 100%; max-width: 500%"
+            />
+          </div>
+        </el-dialog>
         <div style="margin-top: 20px">
           <el-upload
             v-model="form.userImage"
             ref="upload"
-            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            action="#"
             :limit="1"
             :on-exceed="handleExceed"
             :auto-upload="false"
@@ -213,11 +312,11 @@ onMounted(async () => {
               type="primary"
               round
               style="
-                width: 200px;
+                width: 100%;
                 background-image: linear-gradient(to right, #0f5841, #87ab9f);
               "
               size="large"
-              >Select Image</el-button
+              >Select Receiving QR Code</el-button
             >
           </el-upload>
         </div>
@@ -240,4 +339,8 @@ onMounted(async () => {
   </el-form>
 </template>
 
-<style scoped></style>
+<style scoped>
+::v-deep(.el-upload-list__item) {
+  justify-content: center !important;
+}
+</style>

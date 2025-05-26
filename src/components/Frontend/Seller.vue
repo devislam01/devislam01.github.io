@@ -29,11 +29,15 @@ const header = ref({
 });
 
 const handleRemove = (file) => {
-  console.log(file);
+  // Remove the file manually from form.productImage
+  form.value.productImage = form.value.productImage.filter(
+    (f) => f.uid !== file.uid
+  );
+  console.log("After remove:", form.value.productImage);
 };
 
-const handlePictureCardPreview = () => {
-  //   dialogImageUrl.value = file.url!
+const handlePictureCardPreview = (file) => {
+  dialogImageUrl.value = file.url || URL.createObjectURL(file.raw);
   dialogVisible.value = true;
 };
 
@@ -155,7 +159,11 @@ onMounted(async () => {
                 justify-content: center;
               "
             >
-              <img style="width: 150px;height: 150px; object-fit: contain;" :src="item.productImage" alt="" />
+              <img
+                style="width: 150px; height: 150px; object-fit: contain"
+                :src="item.productImage"
+                alt=""
+              />
               <div
                 style="
                   display: flex;
@@ -256,6 +264,7 @@ onMounted(async () => {
             action="https://localhost:7047/api/common/upload"
             :headers="header"
             name="ProductImage"
+            style="justify-content: center"
           >
             <el-icon><Plus /></el-icon>
 
@@ -284,8 +293,17 @@ onMounted(async () => {
               </div>
             </template>
           </el-upload>
-          <el-dialog v-model="dialogVisible">
-            <img w-full :src="dialogImageUrl" alt="Preview Image" />
+          <el-dialog
+            v-model="dialogVisible"
+            style="width: 700px; height: 500px; align-content: center"
+          >
+            <div style="text-align: center">
+              <img
+                :src="dialogImageUrl"
+                alt="Preview Image"
+                style="max-height: 400px; width: auto; max-width: 500%"
+              />
+            </div>
           </el-dialog>
           <div style="text-align: left">
             <div
@@ -453,5 +471,9 @@ onMounted(async () => {
 
 .el-col-12 {
   max-width: 100% !important;
+}
+
+::v-deep(.el-upload-list__item) {
+  justify-content: center !important;
 }
 </style>

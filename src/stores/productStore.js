@@ -40,7 +40,22 @@ export const useProductStore = defineStore("products", {
         },
       });
     },
-
+    async shoppingCart() {
+      console.log("inside shoipping cart in product store");
+      const response = await axios.get(`cart/shoppingCart`);
+      this.data = response.data;
+      return response.data;
+    },
+    async addtoCart(payload) {
+      console.log("update cart");
+      console.log(payload);
+      return await axios.post(`/cart/addtoCart`, payload);
+    },
+    async updateCart(payload) {
+      console.log("update cart in productStore");
+      console.log("payload in update cart", payload);
+      return await axios.post(`/cart/updateCart`, payload);
+    },
     // async getPublicProductInfo(productID){
     //     console.log(productID);
     //     try{

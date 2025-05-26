@@ -34,35 +34,26 @@ const rawCart = localStorage.getItem("cart");
 const cartObj = rawCart ? JSON.parse(rawCart) : {};
 const userCart = cartObj[userID] || [];
 
-const addToCart = () => {
-  const product = {
-    productID: info.value.productID,
-    userID: JSON.parse(atob(token.split(".")[1]))[claimTypes.userId] || null,
-    productName: info.value.productName,
-    productPrice: info.value.productPrice,
-    productCondition: info.value.productCondition,
-    category: info.value.categoryName,
-    quantity: num.value,
-    productImage: info.value.productImage,
+const addtoCart = async () => {
+  const payload = {
+    ProductID: info.value.productID,
+    // userID: userID,
+    // productName: info.value.productName,
+    // productPrice: info.value.productPrice,
+    // productCondition: info.value.productCondition,
+    // category: info.value.categoryName,
+    Quantity: num.value,
+    // productImage: info.value.productImage,
   };
 
-  const existing = userCart.find(
-    (item) => item.productID === product.productID
-  );
-  if (existing) {
-    existing.quantity += product.quantity;
-  } else {
-    userCart.push(product);
+  try {
+    console.log("payload in addToCart Function: ", payload);
+    const response = await productStore.addtoCart(payload);
+    toast.success("Cart updated successfully!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to update cart!");
   }
-
-  cartObj[userID] = userCart;
-  localStorage.setItem("cart", JSON.stringify(cartObj));
-
-  toast.success("Add to Cart Successfully!");
-};
-
-const handleChange = (value) => {
-  console.log(value);
 };
 
 watchEffect(() => {
@@ -238,7 +229,7 @@ onMounted(async () => {
         <el-button
           round
           color="#0F5841"
-          @click="addToCart"
+          @click="addtoCart"
           style="
             background-image: linear-gradient(to right, #0f5841, #87ab9f);
             border: none;

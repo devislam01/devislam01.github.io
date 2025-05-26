@@ -14,7 +14,7 @@ const formRef = ref(null);
 const active = ref(0);
 
 const next = async () => {
-  // await formRef.value.validate();
+  await formRef.value.validate();
   if (active.value++ > 2) active.value = 0;
 };
 
@@ -38,6 +38,23 @@ const rules = ref({
   password: [
     { required: true, message: "Please input Password", trigger: "blur" },
   ],
+  confirmPassword: [
+  {
+    required: true,
+    message: "Please confirm your Password",
+    trigger: "blur",
+  },
+  {
+    validator: (rule, value, callback) => {
+      if (value !== form.value.password) {
+        callback(new Error("Passwords do not match"));
+      } else {
+        callback();
+      }
+    },
+    trigger: "blur",
+  },
+],
   username: [
     { required: true, message: "Please input Username", trigger: "blur" },
   ],
@@ -152,10 +169,10 @@ const registerUser = async () => {
             </el-form-item>
           </div>
           <div style="width: 100%; text-align: left">
-            <el-form-item label="Confirm Password" prop="password">
+            <el-form-item label="Confirm Password" prop="confirmPassword">
               <el-input
                 v-model="form.confirmPassword"
-                type="password"
+                type="confirmPassword"
                 show-password
                 placeholder="Please enter your Confirm Password"
                 style="height: 40px"

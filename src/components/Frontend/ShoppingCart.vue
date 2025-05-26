@@ -3,18 +3,95 @@ import Breadcrumb from "../Common/Breadcrumb.vue";
 import { onMounted, ref } from "vue";
 import { Close, Minus, Plus } from "@element-plus/icons-vue";
 import { claimTypes } from "@/utils/constants.js";
+import { useProductStore } from "@/stores/productStore";
+import { useToast } from "vue-toastification";
 
+const toast = useToast();
+const productStore = useProductStore();
 const cartItems = ref([]);
+const cartItemUpdateRequest = ref([]);
 const token = localStorage.getItem("accessToken") || "";
 const userID = JSON.parse(atob(token.split(".")[1]))[claimTypes.userId];
 
-onMounted(() => {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  cartItems.value = cart[userID] || [];
+const fetchshoppingCart = async () => {
+  try {
+    console.log("inside fecth shopping cart function");
+    const response = await productStore.shoppingCart();
+    cartItems.value = response;
+    cartItemUpdateRequest.value = cartItems.value.map((item) => ({
+      productID: item.productID,
+      quantity: item.quantity,
+    }));
+    console.log("response: ", response);
+    console.log("cartItmes: ", cartItems);
+    console.log("cart Item Update Request:", cartItemUpdateRequest);
+  } catch (error) {
+    // toast.error(error);
+  }
+};
+
+const updateCart = async (productID, quantity) => {
+  console.log("inside function update cart");
+  console.log("id and quantity pass into the fucntion:", productID, quantity);
+  const updatedItem = cartItemUpdateRequest.value.find(
+    (item) => item.productID == productID
+  );
+  if (updatedItem) {
+    updatedItem.quantity = quantity;
+  }
+  console.log("the update item list request:", cartItemUpdateRequest);
+
+  try {
+    const payload = cartItemUpdateRequest.value;
+    const response = await productStore.updateCart(payload);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteFromCart = async (productID) => {
+  console.log("inside function deleteFromCart");
+  console.log("id pass into the fucntion:", productID);
+  const indexItem = cartItems.value.findIndex(
+    (item) => item.productID === productID
+  );
+  const indexItemRequest = cartItemUpdateRequest.value.findIndex(
+    (item) => item.productID === productID
+  )
+
+  if (indexItem !== -1 && indexItemRequest !== -1) {
+    cartItems.value.splice(indexItem, 1);
+    cartItemUpdateRequest.value.splice(indexItemRequest, 1)
+    console.log(`Item with productID ${productID} removed from cart.`);
+    console.log("Item in shopping cart: ", cartItems);
+    console.log("Item in request update item: ", cartItemUpdateRequest);
+  } else {
+    console.log(`Item with productID ${productID} not found.`);
+  }
+  console.log("the update item list request:", cartItemUpdateRequest);
+
+  try {
+    const payload = cartItemUpdateRequest.value;
+    const response = await productStore.updateCart(payload);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+onMounted(async () => {
+  console.log("inside ONMOUTED");
+  await fetchshoppingCart();
 });
 
+// onMounted(() => {
+//   const cart = JSON.parse(localStorage.getItem("cart")) || [];
+//   cartItems.value = cart[userID] || [];
+// });
+
 const getSubtotal = (item) => {
-  return item.price * item.quantity;
+  return item.productPrice * item.quantity;
 };
 
 const getTotal = () => {
@@ -98,13 +175,19 @@ const getTotal = () => {
       >
         <el-col :span="8">
           <div style="display: flex; align-items: center; gap: 10px">
-            <img style="width: 150px" :src="item.image" alt="" />
-            <div style="color: #0f5841; font-size: 1.2rem">{{ item.name }}</div>
+            <img
+              style="width: 150px; height: 120px; margin-right: 10px"
+              :src="item.productImage"
+              alt=""
+            />
+            <div style="color: #0f5841; font-size: 1.2rem">
+              {{ item.productName }}
+            </div>
           </div>
         </el-col>
         <el-col :span="5" style="align-content: space-evenly">
           <div style="color: #0f5841; font-size: 1.2rem">
-            RM {{ item.price }}
+            RM {{ item.productPrice }}
           </div>
         </el-col>
         <el-col
@@ -112,11 +195,23 @@ const getTotal = () => {
           style="align-content: space-evenly; justify-items: center"
         >
           <div style="display: flex; align-items: center; gap: 10px">
-            <el-icon style="margin-right: 10px"><Minus /></el-icon>
+            <button
+              @click="updateCart(item.productID, --item.quantity)"
+              class="icon-button"
+              :disabled="item.quantity <= 1"
+            >
+              <el-icon><Minus /></el-icon>
+            </button>
             <div style="color: #0f5841; font-size: 1.2rem">
               {{ item.quantity }}
             </div>
-            <el-icon style="margin-left: 10px"><Plus /></el-icon>
+            <button
+              @click="updateCart(item.productID, ++item.quantity)"
+              class="icon-button"
+              :disabled="item.quantity == item.stockQty"
+            >
+              <el-icon><Plus /></el-icon>
+            </button>
           </div>
         </el-col>
         <el-col :span="5" style="align-content: space-evenly">
@@ -125,7 +220,12 @@ const getTotal = () => {
           </div>
         </el-col>
         <el-col :span="1" style="align-content: space-evenly">
-          <el-icon><Close /></el-icon>
+          <button
+              @click="deleteFromCart(item.productID)"
+              class="icon-button"
+            >
+              <el-icon><Close /></el-icon>
+            </button>
         </el-col>
       </el-row>
     </el-col>
@@ -225,3 +325,12 @@ const getTotal = () => {
     </el-col>
   </el-row>
 </template>
+
+<style scoped>
+.icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+</style>

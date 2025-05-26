@@ -28,7 +28,11 @@ export const useUserStore = defineStore("users", {
       return response.data;
     },
     async updateUserProfile(payload) {
-      return await axios.post(`/user/updateUserProfile`, payload);
+      return await axios.post(`/user/updateUserProfile`, payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
     },
     async forgetPassword(payload) {
       return await axios.post("/user/forgetPassword", payload);
