@@ -44,7 +44,6 @@ const updateUserProfile = async () => {
   try {
     await formRef.value.validate();
     const payload = {
-      userID: Number(route.query.id),
       productImage: "Hello",
       userName: form.value.userName,
       email: form.value.email,
@@ -287,15 +286,12 @@ onMounted(async () => {
             </div>
           </template>
         </el-upload>
-        <el-dialog
-          v-model="dialogVisible"
-          style="align-content: center"
-        >
+        <el-dialog v-model="dialogVisible" style="align-content: center">
           <div style="text-align: center">
             <img
               :src="dialogImageUrl"
               alt="Preview Image"
-              style=" width: 100%; max-width: 500%"
+              style="width: 100%; max-width: 500%"
             />
           </div>
         </el-dialog>
