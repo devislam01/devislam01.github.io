@@ -43,9 +43,9 @@ const getSubtotal = (item) => {
 
 const checkout = async () => {
   orderSummaries.value = orderItems.value.map((item) => ({
-    productID: item.productID,
-    quantity: item.quantity,
-    price: item.productPrice,
+    ProductID: item.productID,
+    Qty: item.quantity,
+    UnitPrice: item.productPrice,
   }));
   if (paymentMethod.value == 1) {
     showDialogCOD.value = true;
