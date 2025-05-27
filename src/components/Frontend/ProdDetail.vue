@@ -81,11 +81,7 @@ const fetchProductDetail = async () => {
 };
 
 const isOwnProduct = () => {
-  if (userID === sellerInfo.value.sellerID) {
-    return false;
-  } else {
-    return true;
-  }
+  return userID !== sellerInfo.value.sellerID;
 };
 
 onMounted(async () => {
