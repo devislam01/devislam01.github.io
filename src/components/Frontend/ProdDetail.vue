@@ -35,7 +35,7 @@ const cartObj = rawCart ? JSON.parse(rawCart) : {};
 const userCart = cartObj[userID] || [];
 
 const addtoCart = async () => {
-  if (isOwnProduct) {
+  if (userID === sellerInfo.value.sellerID) {
     toast.error("You cannot purchase your own product!");
     return;
   }
@@ -78,10 +78,6 @@ const fetchProductDetail = async () => {
   } catch (error) {
     toast.error(error);
   }
-};
-
-const isOwnProduct = () => {
-  return userID === sellerInfo.value.sellerID;
 };
 
 onMounted(async () => {
