@@ -1,19 +1,18 @@
-import { throwError } from "element-plus/es/utils/error.mjs";
 import { defineStore } from "pinia";
 import axios from "@/utils/request.js";
 
-// 第一个参数是应用程序中 store 的唯一 id
 export const useUserStore = defineStore("users", {
-  state: () => {
-    error: null;
-    data: null;
-  },
+  state: () => ({
+    token: localStorage.getItem("accessToken") || "",
+  }),
   actions: {
     async loginUser(payload) {
       const resp = await axios.post("/Auth/login", payload);
 
       localStorage.setItem("accessToken", resp.data.accessToken);
       localStorage.setItem("refreshToken", resp.data.refreshToken);
+
+      this.token = resp.data.accessToken;
     },
     async registerUser(payload) {
       await axios.post("/User/register", payload, {

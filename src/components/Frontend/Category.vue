@@ -1,16 +1,19 @@
 <script setup>
 import { Operation } from "@element-plus/icons-vue";
-import { ElMessageBox } from "element-plus";
-import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import { useProductStore } from "@/stores/productStore";
 import { options } from "@/utils/constants";
+import { useSignalR } from "@/composables/useSignalR.js";
+import { useSignalRStore } from "@/stores/signalrStore.js";
+import { useToast } from "vue-toastification";
 
 const productStore = useProductStore();
+const signalrStore = useSignalRStore();
+const { startConnection } = useSignalR();
+const toast = useToast();
+
 const checkboxes = ref();
 const productList = ref([]);
-const route = useRoute();
-const router = useRouter();
 const pagination = ref({
   pageNumber: 1,
   pageSize: 10,
@@ -59,8 +62,23 @@ const changeSize = async () => {
   pagination.value = response.pagination;
 };
 
+const checkIfSignalMessage = async () => {
+  const unreadMessages = signalrStore.getUnreadMessages();
+
+  unreadMessages.forEach((msg) => {
+    toast.info(msg.content, {
+      onClose: () => {
+        signalrStore.markMessageAsRead(msg.id);
+      },
+      timeout: false,
+    });
+  });
+};
+
 onMounted(async () => {
   await fetchProductList();
+  await startConnection();
+  await checkIfSignalMessage();
 });
 </script>
 

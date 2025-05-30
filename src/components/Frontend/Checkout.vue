@@ -1,18 +1,20 @@
 <script setup>
 import Breadcrumb from "../Common/Breadcrumb.vue";
 import { onMounted, ref } from "vue";
-import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import { useOrderStore } from "@/stores/orderStore";
 import { useToast } from "vue-toastification";
+import { useLoadingStore } from "@/stores/loadingStore.js";
 
 const orderStore = useOrderStore();
+const loadingStore = useLoadingStore();
 const router = useRouter();
+const toast = useToast();
+
 const pickupMethod = ref("self-pickup");
 const paymentMethod = ref("1");
 const showDialogCOD = ref(false);
 const showDialogQR = ref(false);
-const toast = useToast();
 const orderItems = ref([]);
 const totalPrice = ref(0);
 const orderSummaries = ref([]);
@@ -47,9 +49,9 @@ const checkout = async () => {
     Qty: item.quantity,
     UnitPrice: item.productPrice,
   }));
-  if (paymentMethod.value == 1) {
+  if (paymentMethod.value === 1) {
     showDialogCOD.value = true;
-  } else if (paymentMethod.value == 2) {
+  } else if (paymentMethod.value === 2) {
     showDialogQR.value = true;
   }
   const payload = {
@@ -68,7 +70,6 @@ const checkout = async () => {
     qrCodeImg.value = response.qrCode;
 
     console.log("response:", response);
-    return;
   } catch (error) {
     console.error(error);
   }
@@ -83,12 +84,14 @@ const confirmOrder = async () => {
   try {
     console.log("payload in confirmOrder Function: ", payload);
     const response = await orderStore.confirmOrder(payload);
+
+    if (response.code === 200) {
+      await router.push("/");
+    }
   } catch (error) {
     console.error(error);
   }
 };
-
-const open = () => {};
 
 onMounted(async () => {
   await fetchOrderSummaries();
@@ -318,7 +321,6 @@ onMounted(async () => {
           margin: 30px 0 0 0;
           background-image: linear-gradient(to right, #0f5841, #87ab9f);
           border: none;
-          width: -webkit-fill-available;
         "
         size="large"
         >Place Order</el-button
@@ -335,7 +337,13 @@ onMounted(async () => {
         >
         <template #footer>
           <el-button @click="showDialogCOD = false">Close</el-button>
-          <el-button type="primary" @click="confirmOrder">Confirm</el-button>
+          <el-button
+            type="primary"
+            :loading="loadingStore.loading"
+            :disabled="loadingStore.loading"
+            @click="confirmOrder"
+            >Confirm</el-button
+          >
         </template>
       </el-dialog>
       <el-dialog
@@ -371,7 +379,11 @@ onMounted(async () => {
         </div>
         <template #footer>
           <el-button @click="showDialogQR = false">Close</el-button>
-          <el-button type="primary" @click="confirmOrder"
+          <el-button
+            type="primary"
+            :loading="loadingStore.loading"
+            :disabled="loadingStore.loading"
+            @click="confirmOrder"
             >Confirm Order</el-button
           >
         </template>
