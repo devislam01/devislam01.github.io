@@ -18,12 +18,7 @@ const value = ref();
                     <el-row style="width: 100%; border-bottom: 2px solid #0F5841; padding-bottom: 10px;">
                         <el-col :span="12" style="text-align: left;">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <img
-                                    style="width: 40px; border-radius: 50%; border: 2px solid #0F5841; "
-                                    src="/src/assets/ProfilePic.jpg"
-                                    alt=""
-                                />
-                                <div style="color: #0F5841; font-size: 1.1rem;">Ryan</div>
+                                <div style="color: #0F5841; font-size: 1.1rem;">Seller Name: Ryan</div>
                             </div>
                         </el-col>
                         <el-col :span="12" style="align-content: center; justify-items: right;">
@@ -46,6 +41,9 @@ const value = ref();
                     </el-row>
                     <el-row style="width: 100%; margin-top: 10px; justify-content: right;">
                         <div style="color: #0F5841; font-size: 1.2rem;">Order Total: RM 200</div>
+                    </el-row>
+                    <el-row style="width: 100%; margin-top: 10px; justify-content: right;">
+                        <div style="color: #0F5841; font-size: 1.2rem;">Payment Method: COD</div>
                     </el-row>
                     <el-button round color="#0F5841" style="float: right; background-image: linear-gradient(to right, #0F5841 , #87AB9F); border: none; width: 250px; margin-top: 20px;" size="large">Contact Seller</el-button>
                     <el-button round color="#0F5841" style="float: right; background-image: linear-gradient(to right, #0F5841 , #87AB9F); border: none; width: 250px; margin-top: 20px; margin-right: 20px;" size="large">Request to Cancel Order</el-button>
@@ -207,12 +205,7 @@ const value = ref();
                     <el-row style="width: 100%; border-bottom: 2px solid #0F5841; padding-bottom: 10px;">
                         <el-col :span="12" style="text-align: left;">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <img
-                                    style="width: 40px; border-radius: 50%; border: 2px solid #0F5841; "
-                                    src="/src/assets/ProfilePic.jpg"
-                                    alt=""
-                                />
-                                <div style="color: #0F5841; font-size: 1.1rem;">Stephanie</div>
+                                <div style="color: #0F5841; font-size: 1.1rem;">Buyer Name: Stephanie</div>
                             </div>
                         </el-col>
                         <el-col :span="12" style="align-content: center; justify-items: right;">
@@ -236,8 +229,12 @@ const value = ref();
                     <el-row style="width: 100%; margin-top: 10px; justify-content: right;">
                         <div style="color: #0F5841; font-size: 1.2rem;">Order Total: RM 200</div>
                     </el-row>
+                    <el-row style="width: 100%; margin-top: 10px; justify-content: right;">
+                        <div style="color: #0F5841; font-size: 1.2rem;">Payment Method: QR Code</div>
+                    </el-row>
                     <el-button round color="#0F5841" style="float: right; background-image: linear-gradient(to right, #0F5841 , #87AB9F); border: none; width: 250px; margin-top: 20px; " size="large">Contact Buyer</el-button>
                     <el-button round color="#0F5841" style="float: right; background-image: linear-gradient(to right, #0F5841 , #87AB9F); border: none; width: 250px; margin-top: 20px; margin-right: 20px;" size="large">Confirm Order</el-button>
+                    <el-button round color="#0F5841" style="float: right; background-image: linear-gradient(to right, #0F5841 , #87AB9F); border: none; width: 250px; margin-top: 20px; margin-right: 10px;" size="large">Check Payment Receipt</el-button>
                 </el-col>
             </el-row>
             <el-row style="border-style: solid; border-color: #0F5841; border-radius: 15px; margin: 0 20px 20px 20px;">
@@ -245,12 +242,7 @@ const value = ref();
                     <el-row style="width: 100%; border-bottom: 2px solid #0F5841; padding-bottom: 10px;">
                         <el-col :span="12" style="text-align: left;">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <img
-                                    style="width: 40px; border-radius: 50%; border: 2px solid #0F5841; "
-                                    src="/src/assets/ProfilePic.jpg"
-                                    alt=""
-                                />
-                                <div style="color: #0F5841; font-size: 1.1rem;">Stephanie</div>
+                                <div style="color: #0F5841; font-size: 1.1rem;">Buyer Name: Stephanie</div>
                             </div>
                         </el-col>
                         <el-col :span="12" style="align-content: center; justify-items: right;">
@@ -274,6 +266,9 @@ const value = ref();
                     <el-row style="width: 100%; margin-top: 10px; justify-content: right;">
                         <div style="color: #0F5841; font-size: 1.2rem;">Order Total: RM 200</div>
                     </el-row>
+                    <el-row style="width: 100%; margin-top: 10px; justify-content: right;">
+                        <div style="color: #0F5841; font-size: 1.2rem;">Payment Method: COD</div>
+                    </el-row>
                     <el-button round color="#0F5841" style="float: right; background-image: linear-gradient(to right, #0F5841 , #87AB9F); border: none; width: 250px; margin-top: 20px;" size="large">Contact Buyer</el-button>
                     <el-button round color="#0F5841" style="float: right; background-image: linear-gradient(to right, #0F5841 , #87AB9F); border: none; width: 250px; margin-top: 20px; margin-right: 20px;" size="large">Start Shipping</el-button>
                 </el-col>
@@ -288,7 +283,7 @@ const value = ref();
                                     src="/src/assets/ProfilePic.jpg"
                                     alt=""
                                 />
-                                <div style="color: #0F5841; font-size: 1.1rem;">Stephanie</div>
+                                <div style="color: #0F5841; font-size: 1.1rem;">Buyer Name: Stephanie</div>
                             </div>
                         </el-col>
                         <el-col :span="12" style="align-content: center; justify-items: right;">

@@ -14,8 +14,9 @@ export const useOrderStore = defineStore("orders", {
     },
     async checkout(payload) {
       const response = await axios.post(`order/checkout`, payload);
-      this.data = response.data;
-      return response.data;
+    //   this.data = response.data;
+    //   return response.data;
+      return response;
     },
     async confirmOrder(payload) {
       return await axios.post(`order/confirmOrder`, payload, {
@@ -23,6 +24,16 @@ export const useOrderStore = defineStore("orders", {
           "Content-Type": "multipart/form-data",
         },
       });
+    },
+    async getBuyerOrder() {
+      const response = await axios.get(`order/as-buyer`);
+      this.data = response.data;
+      return response.data;
+    },
+    async getSellerOrder() {
+      const response = await axios.get(`order/as-seller`);
+      this.data = response.data;
+      return response.data;
     },
   },
 });

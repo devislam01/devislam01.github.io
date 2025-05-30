@@ -49,11 +49,7 @@ const checkout = async () => {
     Qty: item.quantity,
     UnitPrice: item.productPrice,
   }));
-  if (paymentMethod.value === 1) {
-    showDialogCOD.value = true;
-  } else if (paymentMethod.value === 2) {
-    showDialogQR.value = true;
-  }
+
   const payload = {
     orderSummaries: orderSummaries.value,
     ShippingWay: "Self-Pickup/Meet-Up",
@@ -62,12 +58,20 @@ const checkout = async () => {
   try {
     console.log("payload in checkout Function: ", payload);
     const response = await orderStore.checkout(payload);
-    proceedPaymentRequest.value.orderID = response.orderID;
-    proceedPaymentRequest.value.paymentID = response.paymentID;
+    if (response.code === 200) {
+      proceedPaymentRequest.value.orderID = response.data.orderID;
+      proceedPaymentRequest.value.paymentID = response.data.paymentID;
+      if (paymentMethod.value == 1) {
+        showDialogCOD.value = true;
+      } else if (paymentMethod.value == 2) {
+        showDialogQR.value = true;
+      }
+       qrCodeImg.value = response.data.qrCode;
+    }
 
     // orderID.value = response.orderID;
     // paymentID.value = response.paymentID;
-    qrCodeImg.value = response.qrCode;
+   
 
     console.log("response:", response);
   } catch (error) {
@@ -79,7 +83,7 @@ const confirmOrder = async () => {
   const payload = {
     PaymentID: proceedPaymentRequest.value.paymentID,
     OrderID: proceedPaymentRequest.value.orderID,
-    Receipt: proceedPaymentRequest.value.receipt[0].raw,
+    Receipt: proceedPaymentRequest.value.receipt?.[0]?.raw ?? " ",
   };
   try {
     console.log("payload in confirmOrder Function: ", payload);
