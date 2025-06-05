@@ -20,11 +20,14 @@ const totalPrice = ref(0);
 const orderSummaries = ref([]);
 // const orderID = ref(0);
 // const paymentID = ref(0);
-const qrCodeImg = ref("");
 const proceedPaymentRequest = ref({
   orderID: "",
-  paymentID: "",
-  receipt: [],
+  receiptList: [
+    {
+      paymentID: "",
+      receipt: [],
+    },
+  ],
 });
 
 const fetchOrderSummaries = async () => {
@@ -59,19 +62,27 @@ const checkout = async () => {
     console.log("payload in checkout Function: ", payload);
     const response = await orderStore.checkout(payload);
     if (response.code === 200) {
-      proceedPaymentRequest.value.orderID = response.data.orderID;
-      proceedPaymentRequest.value.paymentID = response.data.paymentID;
+      proceedPaymentRequest.value.orderID =
+        response.data.proceedToPayments[0]?.orderID || "";
+
+      proceedPaymentRequest.value.receiptList =
+        response.data.proceedToPayments.map((item) => ({
+          paymentID: item.paymentID,
+          qrCodeUrl: item.qrCode,
+          productName: item.productName,
+          price: item.price,
+          receipt: [],
+        }));
+
       if (paymentMethod.value == 1) {
         showDialogCOD.value = true;
       } else if (paymentMethod.value == 2) {
         showDialogQR.value = true;
       }
-       qrCodeImg.value = response.data.qrCode;
     }
 
     // orderID.value = response.orderID;
     // paymentID.value = response.paymentID;
-   
 
     console.log("response:", response);
   } catch (error) {
@@ -80,14 +91,21 @@ const checkout = async () => {
 };
 
 const confirmOrder = async () => {
-  const payload = {
-    PaymentID: proceedPaymentRequest.value.paymentID,
-    OrderID: proceedPaymentRequest.value.orderID,
-    Receipt: proceedPaymentRequest.value.receipt?.[0]?.raw ?? " ",
-  };
+  const formData = new FormData();
+
+  formData.append("OrderID", proceedPaymentRequest.value.orderID);
+
+  proceedPaymentRequest.value.receiptList.forEach((item, index) => {
+    formData.append(`ReceiptList[${index}].PaymentID`, item.paymentID);
+
+    if (item.receipt && item.receipt.length > 0) {
+      console.log(item.receipt[0].raw);
+      formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
+    }
+  });
+
   try {
-    console.log("payload in confirmOrder Function: ", payload);
-    const response = await orderStore.confirmOrder(payload);
+    const response = await orderStore.confirmOrder(formData);
 
     if (response.code === 200) {
       await router.push("/");
@@ -361,14 +379,21 @@ onMounted(async () => {
           your order to complete the payment. After the transfer, kindly upload
           a screenshot of the payment receipt as proof.
         </div>
-        <img style="width: 100%" :src="qrCodeImg" alt="" />
-        <div style="text-align: left">
+        <div
+          v-for="(item, index) in proceedPaymentRequest.receiptList"
+          :key="item.paymentID || index"
+          style="margin-bottom: 20px; text-align: left"
+        >
+          <div>
+            <img :src="item.qrCodeUrl" alt="QR Code" style="width: 100%" />
+          </div>
+
           <el-upload
-            v-model:file-list="proceedPaymentRequest.receipt"
+            v-model:file-list="item.receipt"
             class="upload-demo"
             style="width: 100%"
             action="#"
-            :limit="1"
+            :limit="proceedPaymentRequest.receiptList.length"
             :auto-upload="false"
           >
             <template #trigger>
