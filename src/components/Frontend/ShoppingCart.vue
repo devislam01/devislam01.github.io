@@ -44,7 +44,6 @@ const updateCart = async (productID, quantity) => {
   try {
     const payload = cartItemUpdateRequest.value;
     const response = await productStore.updateCart(payload);
-
   } catch (error) {
     console.log(error);
   }
@@ -58,11 +57,11 @@ const deleteFromCart = async (productID) => {
   );
   const indexItemRequest = cartItemUpdateRequest.value.findIndex(
     (item) => item.productID === productID
-  )
+  );
 
   if (indexItem !== -1 && indexItemRequest !== -1) {
     cartItems.value.splice(indexItem, 1);
-    cartItemUpdateRequest.value.splice(indexItemRequest, 1)
+    cartItemUpdateRequest.value.splice(indexItemRequest, 1);
     console.log(`Item with productID ${productID} removed from cart.`);
     console.log("Item in shopping cart: ", cartItems);
     console.log("Item in request update item: ", cartItemUpdateRequest);
@@ -74,7 +73,6 @@ const deleteFromCart = async (productID) => {
   try {
     const payload = cartItemUpdateRequest.value;
     const response = await productStore.updateCart(payload);
-
   } catch (error) {
     console.log(error);
   }
@@ -173,8 +171,21 @@ const getTotal = () => {
           margin-bottom: 10px;
         "
       >
+        <div
+          style="
+            width: 100%;
+            text-align: left;
+            color: #0f5841;
+            font-size: 1.2rem;
+            margin-left: 10px;
+            margin-bottom: 5px;
+          "
+        >
+          Seller Name: {{ item.seller }}
+        </div>
         <el-col :span="8">
           <div style="display: flex; align-items: center; gap: 10px">
+            <el-checkbox v-model="item.selected" />
             <img
               style="width: 150px; height: 120px; margin-right: 10px"
               :src="item.productImage"
@@ -220,12 +231,9 @@ const getTotal = () => {
           </div>
         </el-col>
         <el-col :span="1" style="align-content: space-evenly">
-          <button
-              @click="deleteFromCart(item.productID)"
-              class="icon-button"
-            >
-              <el-icon><Close /></el-icon>
-            </button>
+          <button @click="deleteFromCart(item.productID)" class="icon-button">
+            <el-icon><Close /></el-icon>
+          </button>
         </el-col>
       </el-row>
     </el-col>

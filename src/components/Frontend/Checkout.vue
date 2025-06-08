@@ -10,6 +10,7 @@ const orderStore = useOrderStore();
 const loadingStore = useLoadingStore();
 const router = useRouter();
 const toast = useToast();
+const currentQRIndex = ref(0);
 
 const pickupMethod = ref("self-pickup");
 const paymentMethod = ref("1");
@@ -371,7 +372,7 @@ onMounted(async () => {
       <el-dialog
         v-model="showDialogQR"
         title="QR Payment Confirmation"
-        width="30%"
+        width="22vw"
         align-center
       >
         <div style="text-align: justify">
@@ -380,41 +381,80 @@ onMounted(async () => {
           a screenshot of the payment receipt as proof.
         </div>
         <div
-          v-for="(item, index) in proceedPaymentRequest.receiptList"
-          :key="item.paymentID || index"
-          style="margin-bottom: 20px; text-align: left"
+          style="
+            width: 100%;
+            text-align: left;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 10px;
+          "
         >
-          <div>
-            <img :src="item.qrCodeUrl" alt="QR Code" style="width: 100%" />
-          </div>
+          Price Need to Transfer: RM
+          {{ proceedPaymentRequest.receiptList[currentQRIndex].price }}
+        </div>
+        <div v-if="proceedPaymentRequest.receiptList.length > 0">
+          <div style="margin-bottom: 20px; text-align: left">
+            <img
+              :src="proceedPaymentRequest.receiptList[currentQRIndex].qrCodeUrl"
+              alt="QR Code"
+              style="width: 100%"
+            />
 
-          <el-upload
-            v-model:file-list="item.receipt"
-            class="upload-demo"
-            style="width: 100%"
-            action="#"
-            :limit="proceedPaymentRequest.receiptList.length"
-            :auto-upload="false"
-          >
-            <template #trigger>
-              <el-button type="primary">Upload Payment Receipt</el-button>
-            </template>
-            <template #tip>
-              <div class="el-upload__tip text-red">
-                limit 1 file, new file will cover the old file
-              </div>
-            </template>
-          </el-upload>
+            <el-upload
+              v-model:file-list="
+                proceedPaymentRequest.receiptList[currentQRIndex].receipt
+              "
+              class="upload-demo"
+              style="width: 100%; margin-top: 10px"
+              action="#"
+              :limit="1"
+              :auto-upload="false"
+            >
+              <template #trigger>
+                <el-button type="primary">Upload Payment Receipt</el-button>
+              </template>
+              <template #tip>
+                <div class="el-upload__tip text-red">
+                  Limit 1 file, new file will replace the old one.
+                </div>
+              </template>
+            </el-upload>
+          </div>
         </div>
         <template #footer>
-          <el-button @click="showDialogQR = false">Close</el-button>
-          <el-button
-            type="primary"
-            :loading="loadingStore.loading"
-            :disabled="loadingStore.loading"
-            @click="confirmOrder"
-            >Confirm Order</el-button
+          <div
+            style="
+              width: 100%;
+              display: flex;
+              justify-content: flex-end;
+              gap: 8px;
+            "
           >
+            <el-button v-if="currentQRIndex > 0" @click="currentQRIndex--">
+              Previous
+            </el-button>
+
+            <el-button
+              v-if="
+                currentQRIndex < proceedPaymentRequest.receiptList.length - 1
+              "
+              @click="currentQRIndex++"
+            >
+              Next
+            </el-button>
+
+            <el-button
+              v-if="
+                currentQRIndex === proceedPaymentRequest.receiptList.length - 1
+              "
+              type="primary"
+              :loading="loadingStore.loading"
+              :disabled="loadingStore.loading"
+              @click="confirmOrder"
+            >
+              Confirm Order
+            </el-button>
+          </div>
         </template>
       </el-dialog>
     </el-col>

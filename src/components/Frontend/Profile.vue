@@ -74,13 +74,16 @@ const fetchUserDetail = async () => {
     form.value.userGender = response.userGender;
     form.value.address = response.address;
     form.value.college = response.residentialCollege;
-    form.value.paymentQRCode = [
+    if (response.paymentQRCode !== "https://localhost:7047/" && response.paymentQRCode !== ""){
+      form.value.paymentQRCode = [
       {
         name: "QR Code.jpg",
         url: `${response.paymentQRCode}`, // full URL for preview
         status: "finished",
       },
     ];
+    }
+    
   } catch (error) {
     console.log(error);
   }

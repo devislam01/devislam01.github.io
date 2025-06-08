@@ -80,10 +80,10 @@ const registerUser = async () => {
   try {
     await formRef.value.validate();
 
-    if (!form.value.paymentQRCode || form.value.paymentQRCode.length === 0) {
-      toast.warning("No file selected");
-      return;
-    }
+    // if (!form.value.paymentQRCode || form.value.paymentQRCode.length === 0) {
+    //   toast.warning("No file selected");
+    //   return;
+    // }
 
     const payload = {
       Email: form.value.email,
@@ -93,7 +93,7 @@ const registerUser = async () => {
       Address: form.value.address,
       UserGender: form.value.userGender,
       ResidentialCollege: form.value.college,
-      QRCode: form.value.paymentQRCode[0].raw,
+      QRCode: form.value.paymentQRCode?.[0]?.raw ?? "",
     };
     const response = await userStore.registerUser(payload);
 
@@ -261,7 +261,7 @@ const registerUser = async () => {
             </el-form-item>
           </div>
           <div style="text-align: left">
-            <el-form-item label="QR Code" prop="paymentQRCode">
+            <el-form-item label="QR Code (Optional)" prop="paymentQRCode">
               <el-upload
                 v-model:file-list="form.paymentQRCode"
                 class="upload-demo"
