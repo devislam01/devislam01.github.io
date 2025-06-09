@@ -2,56 +2,33 @@
 import Breadcrumb from "../Common/Breadcrumb.vue";
 import { onMounted, ref } from "vue";
 import { Close, Minus, Plus } from "@element-plus/icons-vue";
-import { claimTypes } from "@/utils/constants.js";
 import { useProductStore } from "@/stores/productStore";
-import { useToast } from "vue-toastification";
 
-const toast = useToast();
 const productStore = useProductStore();
 const cartItems = ref([]);
 const cartItemUpdateRequest = ref([]);
-const token = localStorage.getItem("accessToken") || "";
-const userID = JSON.parse(atob(token.split(".")[1]))[claimTypes.userId];
+const selectedItems = ref([]);
 
 const fetchshoppingCart = async () => {
-  try {
-    console.log("inside fecth shopping cart function");
-    const response = await productStore.shoppingCart();
-    cartItems.value = response;
-    cartItemUpdateRequest.value = cartItems.value.map((item) => ({
-      productID: item.productID,
-      quantity: item.quantity,
-    }));
-    console.log("response: ", response);
-    console.log("cartItmes: ", cartItems);
-    console.log("cart Item Update Request:", cartItemUpdateRequest);
-  } catch (error) {
-    // toast.error(error);
-  }
+  cartItems.value = await productStore.shoppingCart();
+  cartItemUpdateRequest.value = cartItems.value.map((item) => ({
+    productID: item.productID,
+    quantity: item.quantity,
+  }));
 };
 
 const updateCart = async (productID, quantity) => {
-  console.log("inside function update cart");
-  console.log("id and quantity pass into the fucntion:", productID, quantity);
   const updatedItem = cartItemUpdateRequest.value.find(
-    (item) => item.productID == productID
+    (item) => item.productID === productID
   );
   if (updatedItem) {
     updatedItem.quantity = quantity;
   }
-  console.log("the update item list request:", cartItemUpdateRequest);
 
-  try {
-    const payload = cartItemUpdateRequest.value;
-    const response = await productStore.updateCart(payload);
-  } catch (error) {
-    console.log(error);
-  }
+  await productStore.updateCart(cartItemUpdateRequest.value);
 };
 
 const deleteFromCart = async (productID) => {
-  console.log("inside function deleteFromCart");
-  console.log("id pass into the fucntion:", productID);
   const indexItem = cartItems.value.findIndex(
     (item) => item.productID === productID
   );
@@ -62,31 +39,13 @@ const deleteFromCart = async (productID) => {
   if (indexItem !== -1 && indexItemRequest !== -1) {
     cartItems.value.splice(indexItem, 1);
     cartItemUpdateRequest.value.splice(indexItemRequest, 1);
-    console.log(`Item with productID ${productID} removed from cart.`);
-    console.log("Item in shopping cart: ", cartItems);
-    console.log("Item in request update item: ", cartItemUpdateRequest);
-  } else {
-    console.log(`Item with productID ${productID} not found.`);
   }
-  console.log("the update item list request:", cartItemUpdateRequest);
-
-  try {
-    const payload = cartItemUpdateRequest.value;
-    const response = await productStore.updateCart(payload);
-  } catch (error) {
-    console.log(error);
-  }
+  await productStore.updateCart(cartItemUpdateRequest.value);
 };
 
 onMounted(async () => {
-  console.log("inside ONMOUTED");
   await fetchshoppingCart();
 });
-
-// onMounted(() => {
-//   const cart = JSON.parse(localStorage.getItem("cart")) || [];
-//   cartItems.value = cart[userID] || [];
-// });
 
 const getSubtotal = (item) => {
   return item.productPrice * item.quantity;
@@ -185,7 +144,9 @@ const getTotal = () => {
         </div>
         <el-col :span="8">
           <div style="display: flex; align-items: center; gap: 10px">
-            <el-checkbox v-model="item.selected" />
+            <el-checkbox-group v-model="selectedItems">
+              <el-checkbox :value="item.productID"></el-checkbox>
+            </el-checkbox-group>
             <img
               style="width: 150px; height: 120px; margin-right: 10px"
               :src="item.productImage"
@@ -219,7 +180,7 @@ const getTotal = () => {
             <button
               @click="updateCart(item.productID, ++item.quantity)"
               class="icon-button"
-              :disabled="item.quantity == item.stockQty"
+              :disabled="item.quantity === item.stockQty"
             >
               <el-icon><Plus /></el-icon>
             </button>
@@ -326,7 +287,9 @@ const getTotal = () => {
           border: none;
         "
         size="large"
-        ><RouterLink to="/checkout" style="color: #ffffff"
+        ><RouterLink
+          :to="{ path: 'checkout', query: { productID: selectedItems } }"
+          style="color: #ffffff"
           >Proceed to Checkout</RouterLink
         ></el-button
       >

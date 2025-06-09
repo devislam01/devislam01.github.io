@@ -1,12 +1,11 @@
 import { defineStore } from "pinia";
 import axios from "@/utils/request.js";
 
-// 第一个参数是应用程序中 store 的唯一 id
 export const useProductStore = defineStore("products", {
-  state: () => {
-    error: null;
-    data: null;
-  },
+  state: () => ({
+    error: null,
+    data: null,
+  }),
   actions: {
     async getProductList(payload = null) {
       const response = await axios.post(`product/getProductList`, payload);
@@ -56,18 +55,9 @@ export const useProductStore = defineStore("products", {
       console.log("payload in update cart", payload);
       return await axios.post(`/cart/updateCart`, payload);
     },
-    // async getPublicProductInfo(productID){
-    //     console.log(productID);
-    //     try{
-    //         const response = await axios.post(`https://localhost:7172/api/product/getPublicProductInfo`, productID)
-
-    //         this.data = response.data
-
-    //         return response.data
-    //     }catch(error){
-    //         this.error = error.response?.data?.message || error.message
-    //         throw error
-    //     }
-    // },
+    async getFeedbackList(payload) {
+      var response = await axios.post(`order/feedback`, payload);
+      return response.data;
+    },
   },
 });

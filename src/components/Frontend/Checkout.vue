@@ -19,28 +19,20 @@ const showDialogQR = ref(false);
 const orderItems = ref([]);
 const totalPrice = ref(0);
 const orderSummaries = ref([]);
-// const orderID = ref(0);
-// const paymentID = ref(0);
 const proceedPaymentRequest = ref({
   orderID: "",
   receiptList: [
     {
-      paymentID: "",
+      paymentID: null,
       receipt: [],
     },
   ],
 });
 
-const fetchOrderSummaries = async () => {
-  try {
-    const response = await orderStore.getOrderSummaries();
-    orderItems.value = response.shoppingCartObjs;
-    totalPrice.value = response.total;
-    console.log("orderItems in order summaries: ", orderItems.value);
-    console.log("total price: ", totalPrice);
-  } catch (error) {
-    toast.error(error);
-  }
+const fetchOrderSummaries = async (productIDs) => {
+  const response = await orderStore.getOrderSummaries(productIDs);
+  orderItems.value = response.shoppingCartObjs;
+  totalPrice.value = response.total;
 };
 
 const getSubtotal = (item) => {
@@ -59,35 +51,27 @@ const checkout = async () => {
     ShippingWay: "Self-Pickup/Meet-Up",
     PaymentMethod: paymentMethod.value,
   };
-  try {
-    console.log("payload in checkout Function: ", payload);
-    const response = await orderStore.checkout(payload);
-    if (response.code === 200) {
-      proceedPaymentRequest.value.orderID =
-        response.data.proceedToPayments[0]?.orderID || "";
 
-      proceedPaymentRequest.value.receiptList =
-        response.data.proceedToPayments.map((item) => ({
-          paymentID: item.paymentID,
-          qrCodeUrl: item.qrCode,
-          productName: item.productName,
-          price: item.price,
-          receipt: [],
-        }));
+  const response = await orderStore.checkout(payload);
 
-      if (paymentMethod.value == 1) {
-        showDialogCOD.value = true;
-      } else if (paymentMethod.value == 2) {
-        showDialogQR.value = true;
-      }
+  if (response.code === 200) {
+    proceedPaymentRequest.value.orderID =
+      response.data.proceedToPayments[0]?.orderID || "";
+
+    proceedPaymentRequest.value.receiptList =
+      response.data.proceedToPayments.map((item) => ({
+        paymentID: item.paymentID,
+        qrCodeUrl: item.qrCode,
+        productName: item.productName,
+        price: item.price,
+        receipt: [],
+      }));
+
+    if (paymentMethod.value == 1) {
+      showDialogCOD.value = true;
+    } else if (paymentMethod.value == 2) {
+      showDialogQR.value = true;
     }
-
-    // orderID.value = response.orderID;
-    // paymentID.value = response.paymentID;
-
-    console.log("response:", response);
-  } catch (error) {
-    console.error(error);
   }
 };
 
@@ -100,24 +84,20 @@ const confirmOrder = async () => {
     formData.append(`ReceiptList[${index}].PaymentID`, item.paymentID);
 
     if (item.receipt && item.receipt.length > 0) {
-      console.log(item.receipt[0].raw);
       formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
     }
   });
 
-  try {
-    const response = await orderStore.confirmOrder(formData);
+  const response = await orderStore.confirmOrder(formData);
 
-    if (response.code === 200) {
-      await router.push("/");
-    }
-  } catch (error) {
-    console.error(error);
+  if (response.code === 200) {
+    await router.push("/");
   }
 };
 
 onMounted(async () => {
-  await fetchOrderSummaries();
+  const productIDs = router.currentRoute.value.query;
+  await fetchOrderSummaries(productIDs);
 });
 </script>
 

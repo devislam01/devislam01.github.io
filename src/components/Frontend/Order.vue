@@ -1,10 +1,10 @@
 <script setup>
 import Breadcrumb from "../Common/Breadcrumb.vue";
 import { ref, watchEffect } from "vue";
-import { onMounted } from "vue";
 import { useToast } from "vue-toastification";
 import { useOrderStore } from "@/stores/orderStore";
 import { useLoadingStore } from "@/stores/loadingStore.js";
+import router from "@/router/index.js";
 
 const toast = useToast();
 const orderStore = useOrderStore();
@@ -18,7 +18,16 @@ const sellerOrderList = ref([]);
 const showDialogQR = ref(false);
 const showDialogCOD = ref(false);
 const currentQRIndex = ref(0);
-
+const showDialogCancel = ref(false);
+const cancelPayload = ref({
+  orderItemID: null,
+  cancelReason: "",
+});
+const showDialogCancelWholeOrder = ref(false);
+const cancelWholeOrderPayload = ref({
+  orderID: null,
+  cancelReason: "",
+});
 const proceedPaymentRequest = ref({
   orderID: "",
   receiptList: [
@@ -27,6 +36,36 @@ const proceedPaymentRequest = ref({
       receipt: [],
     },
   ],
+});
+const dialogProceedPaymentInfo = ref({
+  orderID: null,
+  QRList: [
+    {
+      paymentID: null,
+      price: null,
+      QRCode: [],
+    },
+  ],
+});
+const showDialogApproveCancelRequest = ref(false);
+const approveCancelPayload = ref({
+  orderItemID: null,
+});
+const showDialogRejectCancelRequest = ref(false);
+const rejectCancelPayload = ref({
+  orderItemID: null,
+  Reason: "",
+});
+const showDialogRateProduct = ref(false);
+const ratingPayload = ref({
+  orderItemID: null,
+  rating: 0,
+  feedback: "",
+});
+const currentItem = ref({
+  sellerName: "",
+  orderItemID: null,
+  productImage: "",
 });
 
 const openReceiptDialog = (imgUrl) => {
@@ -39,92 +78,101 @@ const closeReceiptDialog = () => {
   currentImgUrl.value = "";
 };
 
+const openDialogQR = (order) => {
+  dialogProceedPaymentInfo.value = {
+    orderID: order.orderID,
+    QRList: order.orderItems.map((item) => ({
+      paymentID: item.paymentID,
+      price: item.totalAmtForSeller,
+      QRCode: item.paymentQRCode,
+    })),
+  };
+
+  proceedPaymentRequest.value = {
+    orderID: order.orderID,
+    receiptList: order.orderItems.map((item) => ({
+      paymentID: item.paymentID,
+      receipt: [],
+    })),
+  };
+
+  showDialogQR.value = true;
+};
+
+const openDialogCancel = (orderItemID) => {
+  cancelPayload.value = {
+    orderItemID: orderItemID,
+  };
+  showDialogCancel.value = true;
+};
+
+const openDialogCancelWholeOrder = (orderID) => {
+  cancelWholeOrderPayload.value = {
+    orderID: orderID,
+  };
+  showDialogCancelWholeOrder.value = true;
+};
+
+const openDialogApproveCancel = (orderItemID) => {
+  approveCancelPayload.value = {
+    orderItemID: orderItemID,
+  };
+  showDialogApproveCancelRequest.value = true;
+};
+
+const openDialogRejectCancel = (orderItemID) => {
+  rejectCancelPayload.value = {
+    orderItemID: orderItemID,
+  };
+  showDialogRejectCancelRequest.value = true;
+};
+
+const openDialogRateProduct = (orderItem, item) => {
+  ratingPayload.value = {
+    orderItemID: item.orderItemID,
+  };
+
+  currentItem.value = {
+    sellerName: orderItem.sellerName,
+    orderItemID: item.orderItemID,
+    productImage: item.productImage,
+  };
+
+  showDialogRateProduct.value = true;
+};
+
 const requestToCancelOrder = async () => {
   try {
-    const payload = {
-      productImage: "Hello",
-      userName: form.value.userName,
-      email: form.value.email,
-      phoneNumber: form.value.phoneNumber,
-      userGender: form.value.userGender,
-      address: form.value.address,
-      ResidentialCollege: form.value.college,
-      QRCode: form.value.paymentQRCode[0].raw,
-    };
-    const response = await orderStore.requestToCancelOrder(payload);
+    const response = await orderStore.requestToCancelOrder(cancelPayload.value);
     if (response.code === 200) {
-      toast.success("Update Successfully!");
+      toast.success(response.message);
     }
     console.log(response);
   } catch (error) {
     console.log(error);
+  }
+};
+
+const requestToCancelWholeOrder = async () => {
+  const resp = await orderStore.requestToCancelWholeOrder(
+    cancelWholeOrderPayload.value
+  );
+  if (resp.code === 200) {
+    toast.success(resp.message);
   }
 };
 
 const confirmCancel = async () => {
-  try {
-    const payload = {
-      productImage: "Hello",
-      userName: form.value.userName,
-      email: form.value.email,
-      phoneNumber: form.value.phoneNumber,
-      userGender: form.value.userGender,
-      address: form.value.address,
-      ResidentialCollege: form.value.college,
-      QRCode: form.value.paymentQRCode[0].raw,
-    };
-    const response = await orderStore.confirmCancel(payload);
-    if (response.code === 200) {
-      toast.success("Update Successfully!");
-    }
-    console.log(response);
-  } catch (error) {
-    console.log(error);
+  const response = await orderStore.confirmCancel(approveCancelPayload.value);
+  if (response.code === 200) {
+    toast.success(response.message);
   }
 };
 
 const rejectCancel = async () => {
-  try {
-    const payload = {
-      productImage: "Hello",
-      userName: form.value.userName,
-      email: form.value.email,
-      phoneNumber: form.value.phoneNumber,
-      userGender: form.value.userGender,
-      address: form.value.address,
-      ResidentialCollege: form.value.college,
-      QRCode: form.value.paymentQRCode[0].raw,
-    };
-    const response = await orderStore.rejectCancel(payload);
-    if (response.code === 200) {
-      toast.success("Update Successfully!");
-    }
-    console.log(response);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const checkout = async (order) => {
-  try {
-    console.log("order pass into checkout: ", order);
-    proceedPaymentRequest.value.orderID = order.orderID;
-    proceedPaymentRequest.value.receiptList = order.orderItems.map(
-      (seller) => ({
-        paymentID: seller.paymentID,
-        qrCodeUrl: seller.paymentQRCode,
-        price: seller.totalAmtForSeller,
-        receipt: [],
-      })
-    );
-
-    if (order.paymentMethodID == 1) {
-      showDialogCOD.value = true;
-    } else if (order.paymentMethodID == 2) {
-      showDialogQR.value = true;
-    }
-  } catch (error) {
-    console.error(error);
+  const response = await orderStore.rejectCancel(rejectCancelPayload.value);
+  if (response.code === 200) {
+    toast.success(response.message);
   }
 };
 
@@ -148,7 +196,7 @@ const confirmOrder = async () => {
     if (response.code === 200) {
       showDialogQR.value = false;
       showDialogCOD.value = false;
-      fetchBuyerOrder();
+      await fetchBuyerOrder();
     }
   } catch (error) {
     console.error(error);
@@ -209,16 +257,29 @@ const fetchSellerOrder = async () => {
   }
 };
 
+const rateProduct = async () => {
+  const response = await orderStore.rateProduct(ratingPayload.value);
+  if (response.code === 200) {
+    toast.success(response.message);
+  }
+  await router.push(0);
+};
+
+const getTagColor = {
+  Pending: "primary",
+  Processing: "primary",
+  PartiallyRequestCancel: "warning",
+  RequestCancel: "warning",
+  Cancelled: "danger",
+  Completed: "success",
+};
+
 watchEffect(async () => {
   if (activeName.value === "first") {
     await fetchBuyerOrder();
   } else {
     await fetchSellerOrder();
   }
-});
-
-onMounted(async () => {
-  await fetchBuyerOrder();
 });
 </script>
 
@@ -251,7 +312,14 @@ onMounted(async () => {
             >
               <div style="display: flex; align-items: center; gap: 10px">
                 <div style="color: #0f5841; font-size: 1rem">
-                  Order Status: {{ order.status }}
+                  Order Status:
+                  <el-tag
+                    :type="getTagColor[order.status]"
+                    size="large"
+                    effect="dark"
+                    round
+                    >{{ order.status }}</el-tag
+                  >
                 </div>
               </div>
             </el-col>
@@ -269,6 +337,7 @@ onMounted(async () => {
                 padding-top: 5px;
                 padding-bottom: 5px;
                 border-top: 2px solid #0f5841;
+                color: black;
               "
             >
               Seller Name: {{ seller.sellerName }}
@@ -316,8 +385,40 @@ onMounted(async () => {
                   RM {{ (item.quantity * item.price).toFixed(2) }}
                 </div>
               </el-col>
-            </el-row>
-            <div style="display: flex; justify-content: flex-end; width: 100%">
+              <el-button
+                v-if="
+                  order.status === 'Processing' &&
+                  item.status !== 'RequestCancel'
+                "
+                round
+                color="#0F5841"
+                style="
+                  float: right;
+                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                  border: none;
+                  width: 250px;
+                  margin-top: 20px;
+                "
+                size="large"
+                @click="openDialogCancel(item.orderItemID)"
+                >Request To Cancel</el-button
+              >
+              <el-button
+                v-if="order.status !== 'Pending' && order.paymentMethodID === 2"
+                round
+                color="#0F5841"
+                style="
+                  float: right;
+                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                  border: none;
+                  width: 250px;
+                  margin-top: 20px;
+                  margin-right: 10px;
+                "
+                size="large"
+                @click="openReceiptDialog(seller.receipt)"
+                >Check Payment Receipt</el-button
+              >
               <el-button
                 round
                 color="#0F5841"
@@ -326,44 +427,30 @@ onMounted(async () => {
                   background-image: linear-gradient(to right, #0f5841, #87ab9f);
                   border: none;
                   width: 250px;
-                  margin-bottom: 10px;
+                  margin-top: 20px;
+                  margin-right: 10px;
                 "
                 size="large"
                 @click="redirectToWhatsApp(seller.sellerPhoneNo)"
                 >Contact Seller</el-button
               >
-            </div>
-            <el-button
-              v-if="order.status !== 'Completed' && order.status !== 'Pending'"
-              round
-              color="#0F5841"
-              style="
-                float: right;
-                background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                border: none;
-                width: 250px;
-                margin-top: 20px;
-              "
-              size="large"
-              @click="requestToCancelOrder"
-              >Request To Cancel</el-button
-            >
-            <el-button
-              v-if="order.status !== 'Pending' && order.paymentMethodID === 2"
-              round
-              color="#0F5841"
-              style="
-                float: right;
-                background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                border: none;
-                width: 250px;
-                margin-top: 20px;
-                margin-right: 10px;
-              "
-              size="large"
-              @click="openReceiptDialog(seller.receipt)"
-              >Check Payment Receipt</el-button
-            >
+              <el-button
+                v-if="item.status === 'Completed' && !item.hasRating"
+                round
+                color="#0F5841"
+                style="
+                  float: right;
+                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                  border: none;
+                  width: 250px;
+                  margin-top: 20px;
+                  margin-right: 10px;
+                "
+                size="large"
+                @click="openDialogRateProduct(seller, item)"
+                >Rate Product</el-button
+              >
+            </el-row>
           </el-row>
           <el-row
             style="
@@ -383,6 +470,21 @@ onMounted(async () => {
             </div>
           </el-row>
           <el-button
+            v-if="order.status === 'Processing'"
+            round
+            color="#0F5841"
+            style="
+              float: right;
+              background-image: linear-gradient(to right, #0f5841, #87ab9f);
+              border: none;
+              width: 250px;
+              margin-top: 20px;
+            "
+            size="large"
+            @click="openDialogCancelWholeOrder(order.orderID)"
+            >Request To Cancel All</el-button
+          >
+          <el-button
             v-if="order.status === 'Pending'"
             round
             color="#0F5841"
@@ -394,7 +496,7 @@ onMounted(async () => {
               margin-top: 20px;
             "
             size="large"
-            @click="checkout(order)"
+            @click="openDialogQR(order)"
             >Confirm Order</el-button
           >
         </el-col>
@@ -435,7 +537,14 @@ onMounted(async () => {
             >
               <div style="display: flex; align-items: center; gap: 10px">
                 <div style="color: #0f5841; font-size: 1rem">
-                  Order Status: {{ order.status }}
+                  Order Status:
+                  <el-tag
+                    :type="getTagColor[order.status]"
+                    size="large"
+                    effect="dark"
+                    round
+                    >{{ order.status }}</el-tag
+                  >
                 </div>
               </div>
             </el-col>
@@ -445,6 +554,21 @@ onMounted(async () => {
             :key="indexItem"
             style="width: 100%; border-bottom: 2px solid #0f5841"
           >
+            <el-col
+              :span="24"
+              style="display: flex; justify-content: left; margin-top: 5px"
+            >
+              <div style="color: #000000">
+                Order Item Status:
+                <el-tag
+                  :type="getTagColor[item.status]"
+                  size="large"
+                  effect="dark"
+                  round
+                  >{{ item.status }}</el-tag
+                >
+              </div>
+            </el-col>
             <el-col :span="12">
               <div style="display: flex; align-items: center; gap: 10px">
                 <div
@@ -481,6 +605,37 @@ onMounted(async () => {
                 RM {{ (item.quantity * item.price).toFixed(2) }}
               </div>
             </el-col>
+            <el-button
+              v-if="item.status === 'RequestCancel'"
+              round
+              color="#0F5841"
+              style="
+                float: right;
+                background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                border: none;
+                width: 250px;
+                margin-top: 20px;
+              "
+              size="large"
+              @click="openDialogApproveCancel(item.orderItemID)"
+              >Approve Request</el-button
+            >
+            <el-button
+              v-if="item.status === 'RequestCancel'"
+              round
+              color="#0F5841"
+              style="
+                float: right;
+                background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                border: none;
+                width: 250px;
+                margin-top: 20px;
+              "
+              size="large"
+              @click="openDialogRejectCancel(item.orderItemID)"
+            >
+              Reject Request
+            </el-button>
           </el-row>
           <el-row style="width: 100%; justify-content: right">
             <div style="color: #0f5841; font-size: 1.2rem; margin-top: 10px">
@@ -524,7 +679,7 @@ onMounted(async () => {
             >Check Payment Receipt</el-button
           >
           <el-button
-            v-if="order.status === 'Processing'"
+            v-if="order.orderItems.some((item) => item.status === 'Processing')"
             round
             color="#0F5841"
             style="
@@ -537,39 +692,10 @@ onMounted(async () => {
             "
             size="large"
             @click="markOrderComplete(order.orderID)"
-            >Mark All Completed</el-button
+            :loading="loadingStore.loading"
+            :disabled="loadingStore.loading"
+            >Complete Order</el-button
           >
-          <el-button
-            v-if="order.status === 'RequestCancel'"
-            round
-            color="#0F5841"
-            style="
-              float: right;
-              background-image: linear-gradient(to right, #0f5841, #87ab9f);
-              border: none;
-              width: 250px;
-              margin-top: 20px;
-            "
-            size="large"
-            @click="confirmCancel"
-            >Approve Request</el-button
-          >
-          <el-button
-            v-if="order.status === 'RequestCancel'"
-            round
-            color="#0F5841"
-            style="
-              float: right;
-              background-image: linear-gradient(to right, #0f5841, #87ab9f);
-              border: none;
-              width: 250px;
-              margin-top: 20px;
-            "
-            size="large"
-            @click="rejectCancel"
-          >
-            Reject Request
-          </el-button>
         </el-col>
       </el-row>
     </el-tab-pane>
@@ -587,6 +713,7 @@ onMounted(async () => {
       </div>
     </template>
   </el-dialog>
+
   <el-dialog
     v-model="showDialogQR"
     title="QR Payment Confirmation"
@@ -608,12 +735,12 @@ onMounted(async () => {
       "
     >
       Price Need to Transfer: RM
-      {{ proceedPaymentRequest.receiptList[currentQRIndex].price }}
+      {{ dialogProceedPaymentInfo.QRList[currentQRIndex].price }}
     </div>
-    <div v-if="proceedPaymentRequest.receiptList.length > 0">
+    <div v-if="dialogProceedPaymentInfo.QRList.length > 0">
       <div style="margin-bottom: 20px; text-align: left">
         <img
-          :src="proceedPaymentRequest.receiptList[currentQRIndex].qrCodeUrl"
+          :src="dialogProceedPaymentInfo.QRList[currentQRIndex].QRCode"
           alt="QR Code"
           style="width: 100%"
         />
@@ -648,14 +775,14 @@ onMounted(async () => {
         </el-button>
 
         <el-button
-          v-if="currentQRIndex < proceedPaymentRequest.receiptList.length - 1"
+          v-if="currentQRIndex < dialogProceedPaymentInfo.QRList.length - 1"
           @click="currentQRIndex++"
         >
           Next
         </el-button>
 
         <el-button
-          v-if="currentQRIndex === proceedPaymentRequest.receiptList.length - 1"
+          v-if="currentQRIndex === dialogProceedPaymentInfo.QRList.length - 1"
           type="primary"
           :loading="loadingStore.loading"
           :disabled="loadingStore.loading"
@@ -666,6 +793,7 @@ onMounted(async () => {
       </div>
     </template>
   </el-dialog>
+
   <el-dialog
     v-model="showDialogCOD"
     title="Order Confirmation"
@@ -685,6 +813,177 @@ onMounted(async () => {
         @click="confirmOrder"
         >Confirm</el-button
       >
+    </template>
+  </el-dialog>
+
+  <el-dialog
+    v-model="showDialogCancel"
+    title="Cancel Confirmation"
+    width="30%"
+    align-center
+  >
+    <span>Are you sure you want to cancel this order?</span>
+    <el-input
+      type="textarea"
+      v-model="cancelPayload.cancelReason"
+      placeholder="Why cancel this order?"
+    ></el-input>
+    <template #footer>
+      <el-button @click="showDialogCancel = false">Close</el-button>
+      <el-button
+        type="primary"
+        :loading="loadingStore.loading"
+        :disabled="loadingStore.loading"
+        @click="requestToCancelOrder"
+        >Cancel Anyway</el-button
+      >
+    </template>
+  </el-dialog>
+
+  <el-dialog
+    v-model="showDialogCancelWholeOrder"
+    title="Cancel Order Confirmation"
+    width="30%"
+    align-center
+  >
+    <span>Are you sure you want to cancel the whole order?</span>
+    <el-input
+      type="textarea"
+      v-model="cancelWholeOrderPayload.cancelReason"
+      placeholder="Why cancel this order?"
+    ></el-input>
+    <template #footer>
+      <el-button @click="showDialogCancelWholeOrder = false">Close</el-button>
+      <el-button
+        type="primary"
+        :loading="loadingStore.loading"
+        :disabled="loadingStore.loading"
+        @click="requestToCancelWholeOrder"
+        >Cancel Anyway</el-button
+      >
+    </template>
+  </el-dialog>
+
+  <el-dialog
+    v-model="showDialogApproveCancelRequest"
+    title="Cancellation Request"
+    width="30%"
+    align-center
+  >
+    <span>Are you sure you want to accept the cancellation request?</span>
+    <template #footer>
+      <el-button @click="showDialogApproveCancelRequest = false"
+        >Close</el-button
+      >
+      <el-button
+        type="primary"
+        :loading="loadingStore.loading"
+        :disabled="loadingStore.loading"
+        @click="confirmCancel"
+        >Yes, Cancel It</el-button
+      >
+    </template>
+  </el-dialog>
+
+  <el-dialog
+    v-model="showDialogRejectCancelRequest"
+    title="Cancellation Request"
+    width="30%"
+    align-center
+  >
+    <span>Are you sure you want to reject the cancel request?</span>
+    <el-input
+      type="textarea"
+      placeholder="Why reject the cancellation request"
+      v-model="rejectCancelPayload.Reason"
+    ></el-input>
+    <template #footer>
+      <el-button @click="showDialogRejectCancelRequest = false"
+        >Close</el-button
+      >
+      <el-button
+        type="primary"
+        :loading="loadingStore.loading"
+        :disabled="loadingStore.loading"
+        @click="rejectCancel"
+        >Yes, Reject It</el-button
+      >
+    </template>
+  </el-dialog>
+
+  <!-- Rate Product Dialog -->
+  <el-dialog
+    v-model="showDialogRateProduct"
+    title="Rate Product"
+    width="600"
+    style="text-align: center"
+  >
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      "
+    >
+      <div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+          "
+        >
+          <div style="color: #0f5841; font-size: 1.1rem">Seller:</div>
+          <div style="color: #0f5841; font-size: 1.1rem">
+            {{ currentItem.sellerName }}
+          </div>
+        </div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+          "
+        >
+          <div style="color: #0f5841; font-size: 1.1rem">Product Sold:</div>
+          <img
+            style="width: 100px; border-radius: 10px; border: 2px solid #0f5841"
+            :src="currentItem.productImage"
+            alt=""
+          />
+          <div style="color: #0f5841; font-size: 1.1rem">
+            {{ currentItem.productName }}
+          </div>
+        </div>
+      </div>
+      <el-rate v-model="ratingPayload.rating" allow-half />
+    </div>
+    <div style="margin-top: 10px">
+      <div
+        style="
+          color: #0f5841;
+          font-size: 1.1rem;
+          margin-bottom: 5px;
+          text-align: left;
+        "
+      >
+        Leave Your Feedback:
+      </div>
+      <el-input
+        v-model="ratingPayload.feedback"
+        type="textarea"
+        :rows="4"
+        placeholder="Write your feedback here..."
+      />
+    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="showDialogRateProduct = false">Cancel</el-button>
+        <el-button type="primary" @click="rateProduct">Submit Rating</el-button>
+      </div>
     </template>
   </el-dialog>
 </template>

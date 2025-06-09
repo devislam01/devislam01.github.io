@@ -7,16 +7,26 @@ export const useOrderStore = defineStore("orders", {
     data: null,
   }),
   actions: {
-    async getOrderSummaries() {
-      const response = await axios.get(`order/orderSummaries`);
+    async getOrderSummaries(productIDs) {
+      const response = await axios.get(`order/orderSummaries`, {
+        params: {
+          productID: productIDs,
+        },
+        paramsSerializer: (params) => {
+          const ids = params.productID?.productID;
+
+          if (Array.isArray(ids)) {
+            return ids.map((id) => `productID=${id}`).join("&");
+          }
+
+          return "";
+        },
+      });
       this.data = response.data;
       return response.data;
     },
     async checkout(payload) {
-      const response = await axios.post(`order/checkout`, payload);
-    //   this.data = response.data;
-    //   return response.data;
-      return response;
+      return await axios.post(`order/checkout`, payload);
     },
     async confirmOrder(payload) {
       return await axios.post(`order/confirmOrder`, payload, {
@@ -36,46 +46,28 @@ export const useOrderStore = defineStore("orders", {
       return response.data;
     },
     async requestToCancelOrder(payload) {
-      const response = await axios.post(`order/request_cancelOrderItem`, payload);
-    //   this.data = response.data;
-    //   return response.data;
-      return response;
+      return await axios.post(`order/request_cancelOrderItem`, payload);
+    },
+    async requestToCancelWholeOrder(payload) {
+      return await axios.post(`order/request_cancelOrder`, payload);
     },
     async confirmCancel(payload) {
-      const response = await axios.post(`order/confirm-cancel`, payload);
-    //   this.data = response.data;
-    //   return response.data;
-      return response;
+      return await axios.post(`order/confirm-cancel`, payload);
     },
     async rejectCancel(payload) {
-      const response = await axios.post(`order/reject-cancel`, payload);
-    //   this.data = response.data;
-    //   return response.data;
-      return response;
+      return await axios.post(`order/reject-cancel`, payload);
     },
     async markComplete(payload) {
-      const response = await axios.post(`order/mark-complete`, payload);
-    //   this.data = response.data;
-    //   return response.data;
-      return response;
+      return await axios.post(`order/mark-complete`, payload);
     },
     async markOrderComplete(payload) {
-      const response = await axios.post(`order/mark-order-complete`, payload);
-    //   this.data = response.data;
-    //   return response.data;
-      return response;
+      return await axios.post(`order/mark-order-complete`, payload);
     },
     async rateProduct(payload) {
-      const response = await axios.post(`order/rate-product`, payload);
-    //   this.data = response.data;
-    //   return response.data;
-      return response;
+      return await axios.post(`order/rate-product`, payload);
     },
     async feedback(payload) {
-      const response = await axios.post(`order/feedback`, payload);
-    //   this.data = response.data;
-    //   return response.data;
-      return response;
+      return await axios.post(`order/feedback`, payload);
     },
   },
 });
