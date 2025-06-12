@@ -49,5 +49,55 @@ export const paymentMethods = [
   {
     label: "QR Code",
     value: 2,
-  }
-]
+  },
+];
+
+export const ResidentialColleges = [
+  {
+    label: "Dahlia College",
+    value: "Dahlia College",
+  },
+  {
+    label: "Allamanda College",
+    value: "Allamanda College",
+  },
+  {
+    label: "Cempaka College",
+    value: "Cempaka College",
+  },
+  {
+    label: "Tun Ahmad Zaidi College",
+    value: "Tun Ahmad Zaidi College",
+  },
+  {
+    label: "Rafflesia College",
+    value: "Rafflesia College",
+  },
+  {
+    label: "Kasturi College",
+    value: "Kasturi College",
+  },
+  {
+    label: "Kenanga College",
+    value: "Kenanga College",
+  },
+  {
+    label: "Seroja College",
+    value: "Seroja College",
+  },
+  {
+    label: "Sakura College",
+    value: "Sakura College",
+  },
+];
+
+export const gender = [
+  {
+    label: "Male",
+    value: "Male",
+  },
+  {
+    label: "Female",
+    value: "Female",
+  },
+];
