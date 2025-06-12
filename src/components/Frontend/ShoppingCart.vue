@@ -3,13 +3,16 @@ import Breadcrumb from "../Common/Breadcrumb.vue";
 import { onMounted, ref } from "vue";
 import { Close, Minus, Plus } from "@element-plus/icons-vue";
 import { useProductStore } from "@/stores/productStore";
+import { useToast } from "vue-toastification";
 
 const productStore = useProductStore();
+const toast = useToast();
+
 const cartItems = ref([]);
 const cartItemUpdateRequest = ref([]);
 const selectedItems = ref([]);
 
-const fetchshoppingCart = async () => {
+const fetchShoppingCart = async () => {
   cartItems.value = await productStore.shoppingCart();
   cartItemUpdateRequest.value = cartItems.value.map((item) => ({
     productID: item.productID,
@@ -44,7 +47,7 @@ const deleteFromCart = async (productID) => {
 };
 
 onMounted(async () => {
-  await fetchshoppingCart();
+  await fetchShoppingCart();
 });
 
 const getSubtotal = (item) => {
@@ -140,7 +143,7 @@ const getTotal = () => {
             margin-bottom: 5px;
           "
         >
-          Seller Name: {{ item.seller }}
+          Seller Name: {{ item.sellerName }}
         </div>
         <el-col :span="8">
           <div style="display: flex; align-items: center; gap: 10px">
@@ -288,8 +291,13 @@ const getTotal = () => {
         "
         size="large"
         ><RouterLink
-          :to="{ path: 'checkout', query: { productID: selectedItems } }"
+          :to="
+            selectedItems.length === 0
+              ? ''
+              : { path: 'checkout', query: { productID: selectedItems } }
+          "
           style="color: #ffffff"
+          @click="toast.info('You have to select at least 1 item.')"
           >Proceed to Checkout</RouterLink
         ></el-button
       >
