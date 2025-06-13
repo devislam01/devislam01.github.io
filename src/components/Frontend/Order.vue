@@ -78,16 +78,7 @@ const closeReceiptDialog = () => {
   currentImgUrl.value = "";
 };
 
-const openDialogQR = (order) => {
-  dialogProceedPaymentInfo.value = {
-    orderID: order.orderID,
-    QRList: order.orderItems.map((item) => ({
-      paymentID: item.paymentID,
-      price: item.totalAmtForSeller,
-      QRCode: item.paymentQRCode,
-    })),
-  };
-
+const openDialogQR = (order, paymentMethodID) => {
   proceedPaymentRequest.value = {
     orderID: order.orderID,
     receiptList: order.orderItems.map((item) => ({
@@ -96,7 +87,20 @@ const openDialogQR = (order) => {
     })),
   };
 
-  showDialogQR.value = true;
+  if (paymentMethodID === 1) {
+    showDialogCOD.value = true;
+  } else if (paymentMethodID === 2) {
+    dialogProceedPaymentInfo.value = {
+      orderID: order.orderID,
+      QRList: order.orderItems.map((item) => ({
+        paymentID: item.paymentID,
+        price: item.totalAmtForSeller,
+        QRCode: item.paymentQRCode,
+      })),
+    };
+
+    showDialogQR.value = true;
+  }
 };
 
 const openDialogCancel = (orderItemID) => {
@@ -181,14 +185,18 @@ const confirmOrder = async () => {
 
   formData.append("OrderID", proceedPaymentRequest.value.orderID);
 
-  proceedPaymentRequest.value.receiptList.forEach((item, index) => {
-    formData.append(`ReceiptList[${index}].PaymentID`, item.paymentID);
-
-    if (item.receipt && item.receipt.length > 0) {
-      console.log(item.receipt[0].raw);
-      formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
+  for (const [
+    index,
+    item,
+  ] of proceedPaymentRequest.value.receiptList.entries()) {
+    if (!item.receipt || item.receipt.length === 0) {
+      toast.info("Please upload your receipts");
+      return;
     }
-  });
+
+    formData.append(`ReceiptList[${index}].PaymentID`, item.paymentID);
+    formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
+  }
 
   try {
     const response = await orderStore.confirmOrder(formData);
@@ -329,6 +337,7 @@ watchEffect(async () => {
             :key="indexSeller"
             style="width: 100%"
           >
+            <el-divider />
             <div
               style="
                 display: block;
@@ -336,17 +345,32 @@ watchEffect(async () => {
                 text-align: left;
                 padding-top: 5px;
                 padding-bottom: 5px;
-                border-top: 2px solid #0f5841;
                 color: black;
               "
             >
-              Seller Name: {{ seller.sellerName }}
+              Sold By: {{ seller.sellerName }}
             </div>
             <el-row
               v-for="(item, indexItem) in seller.items"
               :key="indexItem"
               style="width: 100%"
             >
+              <el-divider />
+              <el-col
+                :span="24"
+                style="display: flex; justify-content: left; margin-top: 5px"
+              >
+                <div style="color: #000000">
+                  Status:
+                  <el-tag
+                    :type="getTagColor[item.status]"
+                    size="large"
+                    effect="dark"
+                    round
+                    >{{ item.status }}</el-tag
+                  >
+                </div>
+              </el-col>
               <el-col :span="12">
                 <div style="display: flex; align-items: center; gap: 10px">
                   <div
@@ -387,8 +411,10 @@ watchEffect(async () => {
               </el-col>
               <el-button
                 v-if="
-                  order.status === 'Processing' &&
-                  item.status !== 'RequestCancel'
+                  (order.status === 'Processing' ||
+                    order.status === 'PartiallyRequestCancel') &&
+                  item.status !== 'RequestCancel' &&
+                  item.status !== 'Completed'
                 "
                 round
                 color="#0F5841"
@@ -420,21 +446,6 @@ watchEffect(async () => {
                 >Check Payment Receipt</el-button
               >
               <el-button
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                  margin-right: 10px;
-                "
-                size="large"
-                @click="redirectToWhatsApp(seller.sellerPhoneNo)"
-                >Contact Seller</el-button
-              >
-              <el-button
                 v-if="item.status === 'Completed' && !item.hasRating"
                 round
                 color="#0F5841"
@@ -450,15 +461,26 @@ watchEffect(async () => {
                 @click="openDialogRateProduct(seller, item)"
                 >Rate Product</el-button
               >
+              <el-button
+                v-if="order.orderItems.length > 1"
+                round
+                color="#0F5841"
+                style="
+                  float: right;
+                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                  border: none;
+                  width: 250px;
+                  margin-top: 20px;
+                  margin-right: 10px;
+                "
+                size="large"
+                @click="redirectToWhatsApp(seller.sellerPhoneNo)"
+                >Contact Seller</el-button
+              >
             </el-row>
           </el-row>
-          <el-row
-            style="
-              width: 100%;
-              justify-content: right;
-              border-top: 2px solid #0f5841;
-            "
-          >
+          <el-divider />
+          <el-row style="width: 100%; justify-content: right">
             <div style="color: #0f5841; font-size: 1.2rem; margin-top: 10px">
               Order Total: RM {{ order.totalAmt }}
             </div>
@@ -496,8 +518,24 @@ watchEffect(async () => {
               margin-top: 20px;
             "
             size="large"
-            @click="openDialogQR(order)"
+            @click="openDialogQR(order, order.paymentMethodID)"
             >Confirm Order</el-button
+          >
+          <el-button
+            v-if="order.orderItems.length === 1"
+            round
+            color="#0F5841"
+            style="
+              float: right;
+              background-image: linear-gradient(to right, #0f5841, #87ab9f);
+              border: none;
+              width: 250px;
+              margin-top: 20px;
+              margin-right: 10px;
+            "
+            size="large"
+            @click="redirectToWhatsApp(order.orderItems[0].sellerPhoneNo)"
+            >Contact Seller</el-button
           >
         </el-col>
       </el-row>
@@ -516,50 +554,37 @@ watchEffect(async () => {
         "
       >
         <el-col :span="24" style="padding: 20px">
-          <el-row
-            style="
-              width: 100%;
-              padding-bottom: 10px;
-              border-bottom: 2px solid #0f5841;
-            "
-          >
+          <el-row style="width: 100%; padding-bottom: 10px">
             <el-col :span="12" style="text-align: left">
-              <div style="display: flex; align-items: center; gap: 10px">
-                <div style="color: #0f5841; font-size: 1.1rem">
-                  Order ID: {{ order.orderID }}
-                </div>
-                <div>Buyer Name: {{ order.buyerName }}</div>
-              </div>
-            </el-col>
-            <el-col
-              :span="12"
-              style="align-content: center; justify-items: right"
-            >
-              <div style="display: flex; align-items: center; gap: 10px">
-                <div style="color: #0f5841; font-size: 1rem">
-                  Order Status:
-                  <el-tag
-                    :type="getTagColor[order.status]"
-                    size="large"
-                    effect="dark"
-                    round
-                    >{{ order.status }}</el-tag
-                  >
-                </div>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  font-size: 1.1rem;
+                "
+              >
+                <div style="color: #0f5841">Order ID: {{ order.orderID }}</div>
+                <el-divider
+                  direction="vertical"
+                  style="border-left-width: 2px; border-color: black"
+                />
+                <div style="color: black">Bought By: {{ order.buyerName }}</div>
               </div>
             </el-col>
           </el-row>
+          <el-divider />
           <el-row
             v-for="(item, indexItem) in order.orderItems"
             :key="indexItem"
-            style="width: 100%; border-bottom: 2px solid #0f5841"
+            style="width: 100%"
           >
             <el-col
               :span="24"
               style="display: flex; justify-content: left; margin-top: 5px"
             >
               <div style="color: #000000">
-                Order Item Status:
+                Status:
                 <el-tag
                   :type="getTagColor[item.status]"
                   size="large"
@@ -636,6 +661,7 @@ watchEffect(async () => {
             >
               Reject Request
             </el-button>
+            <el-divider />
           </el-row>
           <el-row style="width: 100%; justify-content: right">
             <div style="color: #0f5841; font-size: 1.2rem; margin-top: 10px">

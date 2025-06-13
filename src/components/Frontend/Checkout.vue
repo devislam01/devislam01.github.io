@@ -80,13 +80,18 @@ const confirmOrder = async () => {
 
   formData.append("OrderID", proceedPaymentRequest.value.orderID);
 
-  proceedPaymentRequest.value.receiptList.forEach((item, index) => {
-    formData.append(`ReceiptList[${index}].PaymentID`, item.paymentID);
-
-    if (item.receipt && item.receipt.length > 0) {
-      formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
+  for (const [
+    index,
+    item,
+  ] of proceedPaymentRequest.value.receiptList.entries()) {
+    if (!item.receipt || item.receipt.length === 0) {
+      toast.info("Please upload your receipts");
+      return;
     }
-  });
+
+    formData.append(`ReceiptList[${index}].PaymentID`, item.paymentID);
+    formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
+  }
 
   const response = await orderStore.confirmOrder(formData);
 
