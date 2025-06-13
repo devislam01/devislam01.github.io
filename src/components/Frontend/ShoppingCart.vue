@@ -151,7 +151,7 @@ const getTotal = () => {
               <el-checkbox :value="item.productID"></el-checkbox>
             </el-checkbox-group>
             <img
-              style="width: 150px; height: 120px; margin-right: 10px"
+              style="width: 150px; height: 120px; margin-right: 10px; object-fit: contain;"
               :src="item.productImage"
               alt=""
             />

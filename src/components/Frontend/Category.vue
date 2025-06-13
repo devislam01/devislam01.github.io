@@ -83,7 +83,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <el-row style="margin-top: 1.5rem" :gutter="20">
+  <el-row style="margin-top: -0.3rem" :gutter="20">
     <el-col class="sideFilter" :span="5">
       <el-card>
         <template #header>
@@ -209,10 +209,14 @@ onMounted(async () => {
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  margin: 0 12px 15px 12px;
+  margin: 10px 12px 10px 12px;
 }
 
 .product-col:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.sideFilter {
+  margin: 10px 0 0 0;
 }
 </style>

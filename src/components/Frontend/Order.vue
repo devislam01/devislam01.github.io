@@ -297,7 +297,7 @@ watchEffect(async () => {
           margin: 0 20px 20px 20px;
         "
       >
-        <el-col :span="24" style="padding: 20px">
+        <el-col :span="24" style="padding: 15px">
           <el-row style="width: 100%; padding-bottom: 10px">
             <el-col :span="12" style="text-align: left">
               <div style="display: flex; align-items: center; gap: 10px">
@@ -311,7 +311,7 @@ watchEffect(async () => {
               style="align-content: center; justify-items: right"
             >
               <div style="display: flex; align-items: center; gap: 10px">
-                <div style="color: #0f5841; font-size: 1rem">
+                <div style="color: #0f5841; font-size: 1.1rem">
                   Order Status:
                   <el-tag
                     :type="getTagColor[order.status]"
@@ -385,71 +385,90 @@ watchEffect(async () => {
                   RM {{ (item.quantity * item.price).toFixed(2) }}
                 </div>
               </el-col>
-              <el-button
-                v-if="
-                  order.status === 'Processing' &&
-                  item.status !== 'RequestCancel'
-                "
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                "
-                size="large"
-                @click="openDialogCancel(item.orderItemID)"
-                >Request To Cancel</el-button
-              >
-              <el-button
-                v-if="order.status !== 'Pending' && order.paymentMethodID === 2"
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                  margin-right: 10px;
-                "
-                size="large"
-                @click="openReceiptDialog(seller.receipt)"
-                >Check Payment Receipt</el-button
-              >
-              <el-button
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                  margin-right: 10px;
-                "
-                size="large"
-                @click="redirectToWhatsApp(seller.sellerPhoneNo)"
-                >Contact Seller</el-button
-              >
-              <el-button
-                v-if="item.status === 'Completed' && !item.hasRating"
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                  margin-right: 10px;
-                "
-                size="large"
-                @click="openDialogRateProduct(seller, item)"
-                >Rate Product</el-button
-              >
+              <div style="display: flex; align-items: flex-end; width: 100%; justify-content: right;">
+                <el-button
+                  v-if="
+                    order.status !== 'Pending' && order.paymentMethodID === 2
+                  "
+                  round
+                  color="#0F5841"
+                  style="
+                    float: right;
+                    background-image: linear-gradient(
+                      to right,
+                      #0f5841,
+                      #87ab9f
+                    );
+                    border: none;
+                    width: 250px;
+                    margin-top: 20px;
+                    margin-bottom: 10px;
+                  "
+                  size="large"
+                  @click="openReceiptDialog(seller.receipt)"
+                  >Check Payment Receipt</el-button
+                >
+                <el-button
+                  v-if="
+                    order.status === 'Processing' &&
+                    item.status !== 'RequestCancel'
+                  "
+                  round
+                  color="#0F5841"
+                  style="
+                    float: right;
+                    background-image: linear-gradient(
+                      to right,
+                      #0f5841,
+                      #87ab9f
+                    );
+                    border: none;
+                    width: 250px;
+                    margin-bottom: 10px;
+                  "
+                  size="large"
+                  @click="openDialogCancel(item.orderItemID)"
+                  >Request To Cancel</el-button
+                >
+                <el-button
+                  round
+                  color="#0F5841"
+                  style="
+                    background-image: linear-gradient(
+                      to right,
+                      #0f5841,
+                      #87ab9f
+                    );
+                    border: none;
+                    width: 250px;
+                    margin-top: 20px;
+                    margin-bottom: 10px;
+                  "
+                  size="large"
+                  @click="redirectToWhatsApp(seller.sellerPhoneNo)"
+                  >Contact Seller</el-button
+                >
+                <el-button
+                  v-if="item.status === 'Completed' && !item.hasRating"
+                  round
+                  color="#0F5841"
+                  style="
+                    float: right;
+                    background-image: linear-gradient(
+                      to right,
+                      #0f5841,
+                      #87ab9f
+                    );
+                    border: none;
+                    width: 250px;
+                    margin-top: 20px;
+                    margin-bottom: 10px;
+                  "
+                  size="large"
+                  @click="openDialogRateProduct(seller, item)"
+                  >Rate Product</el-button
+                >
+              </div>
             </el-row>
           </el-row>
           <el-row
@@ -515,7 +534,7 @@ watchEffect(async () => {
           margin: 0 20px 20px 20px;
         "
       >
-        <el-col :span="24" style="padding: 20px">
+        <el-col :span="24" style="padding: 15px">
           <el-row
             style="
               width: 100%;
@@ -524,8 +543,8 @@ watchEffect(async () => {
             "
           >
             <el-col :span="12" style="text-align: left">
-              <div style="display: flex; align-items: center; gap: 10px">
-                <div style="color: #0f5841; font-size: 1.1rem">
+              <div style="align-items: center; gap: 10px; font-size: 1.1rem">
+                <div style="color: #0f5841;">
                   Order ID: {{ order.orderID }}
                 </div>
                 <div>Buyer Name: {{ order.buyerName }}</div>
@@ -536,7 +555,7 @@ watchEffect(async () => {
               style="align-content: center; justify-items: right"
             >
               <div style="display: flex; align-items: center; gap: 10px">
-                <div style="color: #0f5841; font-size: 1rem">
+                <div style="color: #0f5841; font-size: 1.1rem">
                   Order Status:
                   <el-tag
                     :type="getTagColor[order.status]"
@@ -556,7 +575,7 @@ watchEffect(async () => {
           >
             <el-col
               :span="24"
-              style="display: flex; justify-content: left; margin-top: 5px"
+              style="display: flex; justify-content: right; margin-top: 10px"
             >
               <div style="color: #000000">
                 Order Item Status:
@@ -589,6 +608,7 @@ watchEffect(async () => {
                       max-width: 100%;
                       max-height: 100%;
                       object-fit: contain;
+                      margin-bottom: 20px;
                     "
                   />
                 </div>
@@ -663,7 +683,7 @@ watchEffect(async () => {
             >Contact Buyer</el-button
           >
           <el-button
-            v-if="order.status !== 'Pending' && order.paymentMethodID === 2"
+            v-if="order.orderItems.some((item) => item.status === 'Processing')"
             round
             color="#0F5841"
             style="
@@ -675,11 +695,13 @@ watchEffect(async () => {
               margin-right: 10px;
             "
             size="large"
-            @click="openReceiptDialog(order.receipt)"
-            >Check Payment Receipt</el-button
+            @click="markOrderComplete(order.orderID)"
+            :loading="loadingStore.loading"
+            :disabled="loadingStore.loading"
+            >Complete Order</el-button
           >
           <el-button
-            v-if="order.orderItems.some((item) => item.status === 'Processing')"
+            v-if="order.status !== 'Pending' && order.paymentMethodID === 2"
             round
             color="#0F5841"
             style="
@@ -688,13 +710,10 @@ watchEffect(async () => {
               border: none;
               width: 250px;
               margin-top: 20px;
-              margin-right: 20px;
             "
             size="large"
-            @click="markOrderComplete(order.orderID)"
-            :loading="loadingStore.loading"
-            :disabled="loadingStore.loading"
-            >Complete Order</el-button
+            @click="openReceiptDialog(order.receipt)"
+            >Check Payment Receipt</el-button
           >
         </el-col>
       </el-row>
