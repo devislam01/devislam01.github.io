@@ -39,12 +39,11 @@ const loginUser = async () => {
   await userStore.loginUser(payload);
 
   toast.success("Login Success");
-  await router.push({ path: "/", query: { showMessageBox: "true" } });
+  await router.push({ path: "/admin", query: { showMessageBox: "true" } });
 };
 </script>
 
 <template>
-  <TopNavigation></TopNavigation>
   <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
     <el-row
       style="
@@ -149,21 +148,6 @@ const loginUser = async () => {
             items among the community of UNIMAS. Find your next desired items
             with just a click!
           </div>
-          <el-button
-            round
-            color="#0F5841"
-            style="
-              margin: 20px;
-              border: none;
-              background-color: rgba(255, 255, 255, 0.3);
-              color: white;
-              width: 350px;
-            "
-            size="large"
-            ><RouterLink to="/register" style="color: white"
-              >Don’t have an account? Signup here</RouterLink
-            ></el-button
-          >
         </div>
       </el-col>
     </el-row>

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "@/utils/request.js";
 
-export const useAdminStore = defineStore("admin", {
+export const useUserStore = defineStore("user", {
   state: () => ({
     error: null,
     data: null,

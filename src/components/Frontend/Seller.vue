@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import { useProductStore } from "@/stores/productStore";
 import { useUserStore } from "@/stores/userStore";
-import { options } from "@/utils/constants";
+import { category } from "@/utils/constants";
 import { useToast } from "vue-toastification";
 import router from "@/router";
 import { Delete, Edit, Plus, ZoomIn } from "@element-plus/icons-vue";
@@ -30,12 +30,14 @@ const header = ref({
   Authorization: "Bearer " + localStorage.getItem("accessToken"),
 });
 
-
 const checkQRCode = async () => {
   try {
     // console.log("inside the check qr code function");
     const response = await userStore.getUserProfile();
-    if (response.paymentQRCode == "https://localhost:7047/" || response.paymentQRCode == "" ){
+    if (
+      response.paymentQRCode == "https://localhost:7047/" ||
+      response.paymentQRCode == ""
+    ) {
       toast.warning("Please upload the QR Code before add product!");
       setTimeout(() => {
         if (router.currentRoute.value.path !== "/Profile") {
@@ -48,7 +50,7 @@ const checkQRCode = async () => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 const handleRemove = (file) => {
   // Remove the file manually from form.productImage
@@ -390,7 +392,7 @@ onMounted(async () => {
             "
           >
             <el-option
-              v-for="item in options"
+              v-for="item in category"
               :key="item.value"
               :label="item.label"
               :value="item.value"

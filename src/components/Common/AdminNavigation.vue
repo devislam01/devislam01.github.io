@@ -2,6 +2,7 @@
 import { RouterLink } from "vue-router";
 
 import { Menu as IconMenu } from "@element-plus/icons-vue";
+import { logout } from "@/utils/logout.js";
 </script>
 
 <template>
@@ -40,11 +41,9 @@ import { Menu as IconMenu } from "@element-plus/icons-vue";
             <span>Order List</span>
           </el-menu-item>
         </RouterLink>
-        <RouterLink to="/login">
-          <el-menu-item index="5">
-            <span>Logout</span>
-          </el-menu-item>
-        </RouterLink>
+        <el-menu-item index="5" @click="logout">
+          <span>Logout</span>
+        </el-menu-item>
       </el-menu>
     </el-col>
   </el-row>

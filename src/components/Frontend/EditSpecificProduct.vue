@@ -3,7 +3,7 @@ import Breadcrumb from "../Common/Breadcrumb.vue";
 import { onMounted, ref } from "vue";
 import { useProductStore } from "@/stores/productStore";
 import { useRoute, useRouter } from "vue-router";
-import { options } from "@/utils/constants";
+import { category } from "@/utils/constants";
 import { useToast } from "vue-toastification";
 import { ArrowLeftBold, Delete, Plus, ZoomIn } from "@element-plus/icons-vue";
 import { genFileId } from "element-plus";
@@ -253,7 +253,7 @@ onMounted(async () => {
         "
       >
         <el-option
-          v-for="item in options"
+          v-for="item in category"
           :key="item.value"
           :label="item.label"
           :value="item.value"

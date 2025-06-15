@@ -8,12 +8,12 @@ import {
   Remove,
   Warning,
 } from "@element-plus/icons-vue";
-import { useAdminStore } from "@/stores/adminStore.js";
+import { useUserStore } from "@/stores/admin/userStore.js";
 import { gender, ResidentialColleges } from "@/utils/constants.js";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 
-const adminStore = useAdminStore();
+const userStore = useUserStore();
 const toast = useToast();
 const router = useRouter();
 
@@ -120,7 +120,7 @@ const fetchUsers = async () => {
     email: querySearch.value.email,
     phoneNumber: querySearch.value.phoneNumber,
   };
-  const resp = await adminStore.getUsers(payload);
+  const resp = await userStore.getUsers(payload);
 
   if (resp.code === 200) {
     userList.value = resp.data.data;
@@ -135,14 +135,14 @@ const fetchUserDetails = async (userID) => {
   const payload = {
     userID: userID,
   };
-  const resp = await adminStore.getUserDetails(payload);
+  const resp = await userStore.getUserDetails(payload);
   if (resp.code === 200) {
     editUserDetailFormData.value = resp.data;
   }
 };
 
 const registerUser = async () => {
-  const resp = await adminStore.registerUser(registerUserFormData.value);
+  const resp = await userStore.registerUser(registerUserFormData.value);
   if (resp.code === 200) {
     toast.success(resp.message);
     setTimeout(() => {
@@ -152,7 +152,7 @@ const registerUser = async () => {
 };
 
 const updateUserDetail = async () => {
-  const resp = await adminStore.updateUserDetails(editUserDetailFormData.value);
+  const resp = await userStore.updateUserDetails(editUserDetailFormData.value);
   if (resp.code === 200) {
     toast.success(resp.message);
     setTimeout(() => {
@@ -190,7 +190,7 @@ const banUser = async (userID) => {
   const payload = {
     userID: userID,
   };
-  const resp = await adminStore.banUser(payload);
+  const resp = await userStore.banUser(payload);
   if (resp.code === 200) {
     setTimeout(() => {
       router.go(0);
@@ -202,7 +202,7 @@ const reinstateUser = async (userID) => {
   const payload = {
     userID: userID,
   };
-  const resp = await adminStore.reinstateUser(payload);
+  const resp = await userStore.reinstateUser(payload);
   if (resp.code === 200) {
     setTimeout(() => {
       router.go(0);
@@ -215,7 +215,7 @@ const submitResetPassword = async () => {
     userID: selectedUser.value.userID,
     password: resetPassword.value,
   };
-  const resp = await adminStore.resetPassword(payload);
+  const resp = await userStore.resetPassword(payload);
   if (resp.code === 200) {
     setTimeout(() => {
       router.go(0);
@@ -380,7 +380,7 @@ onMounted(fetchUsers);
 
     <!-- Pagination -->
     <el-row>
-      <div style="justify-items: center; margin: 3% 0">
+      <div style="margin: 3% auto">
         <el-pagination
           v-model:current-page="pagination.pageNumber"
           v-model:page-size="pagination.pageSize"
@@ -388,7 +388,9 @@ onMounted(fetchUsers);
           :page-sizes="[10, 50, 100]"
           :size="pagination.pageSize"
           :total="pagination.totalRecord"
-          :hide-on-single-page="pagination.pageCount === 1"
+          :hide-on-single-page="
+            pagination.pageCount === 1 && pagination.totalRecord <= 10
+          "
           @current-change="fetchUsers"
           @size-change="fetchUsers"
         />
@@ -554,7 +556,7 @@ onMounted(fetchUsers);
         <el-col :span="17">
           <el-input
             v-model="editUserDetailFormData.phoneNumber"
-            placeholder="01x-xxxxxxx"
+            placeholder="01xxxxxxxx"
             style="height: 40px"
           ></el-input>
         </el-col>

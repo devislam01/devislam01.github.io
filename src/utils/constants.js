@@ -11,7 +11,7 @@ export const HttpCode = {
   504: "Gateway timeout",
 };
 
-export const options = [
+export const category = [
   {
     value: 1,
     label: "Kitchenware",
@@ -99,5 +99,64 @@ export const gender = [
   {
     label: "Female",
     value: "Female",
+  },
+];
+
+export const productConditions = [
+  {
+    label: "Brand New",
+    value: "Brand New",
+  },
+  {
+    label: "Like New",
+    value: "Like New",
+  },
+  {
+    label: "Gently Used",
+    value: "Gently Used",
+  },
+  {
+    label: "Moderately Used",
+    value: "Moderately Used",
+  },
+  {
+    label: "Heavily Used",
+    value: "Heavily Used",
+  },
+];
+
+export const getTagColor = {
+  Pending: "primary",
+  Processing: "primary",
+  PartiallyRequestCancel: "warning",
+  RequestCancel: "warning",
+  Cancelled: "danger",
+  Completed: "success",
+};
+
+export const orderStatus = [
+  {
+    label: "Pending",
+    value: "Pending",
+  },
+  {
+    label: "Processing",
+    value: "Processing",
+  },
+  {
+    label: "PartiallyRequestCancel",
+    value: "PartiallyRequestCancel",
+  },
+  {
+    label: "RequestCancel",
+    value: "RequestCancel",
+  },
+  {
+    label: "Cancelled",
+    value: "Cancelled",
+  },
+  {
+    label: "Completed",
+    value: "Completed",
   },
 ];

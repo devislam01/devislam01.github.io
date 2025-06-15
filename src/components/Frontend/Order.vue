@@ -5,6 +5,7 @@ import { useToast } from "vue-toastification";
 import { useOrderStore } from "@/stores/orderStore";
 import { useLoadingStore } from "@/stores/loadingStore.js";
 import router from "@/router/index.js";
+import { getTagColor } from "@/utils/constants.js";
 
 const toast = useToast();
 const orderStore = useOrderStore();
@@ -232,7 +233,7 @@ const markOrderComplete = async (orderID) => {
     const response = await orderStore.markOrderComplete(payload);
     if (response.code === 200) {
       toast.success(response.message);
-      fetchSellerOrder();
+      await fetchSellerOrder();
     }
   } catch (error) {
     console.log(error);
@@ -271,15 +272,6 @@ const rateProduct = async () => {
     toast.success(response.message);
   }
   await router.push(0);
-};
-
-const getTagColor = {
-  Pending: "primary",
-  Processing: "primary",
-  PartiallyRequestCancel: "warning",
-  RequestCancel: "warning",
-  Cancelled: "danger",
-  Completed: "success",
 };
 
 watchEffect(async () => {

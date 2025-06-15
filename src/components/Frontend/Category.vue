@@ -2,7 +2,7 @@
 import { Operation } from "@element-plus/icons-vue";
 import { onMounted, ref } from "vue";
 import { useProductStore } from "@/stores/productStore";
-import { options } from "@/utils/constants";
+import { category } from "@/utils/constants";
 import { useSignalR } from "@/composables/useSignalR.js";
 import { useSignalRStore } from "@/stores/signalrStore.js";
 import { useToast } from "vue-toastification";
@@ -111,7 +111,7 @@ onMounted(async () => {
         </template>
         <el-checkbox-group
           v-model="checkboxes"
-          v-for="item in options"
+          v-for="item in category"
           style="display: flex; flex-direction: column"
         >
           <el-checkbox
