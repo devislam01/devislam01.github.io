@@ -1,10 +1,10 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { Plus } from "@element-plus/icons-vue";
+import { Edit, Refresh, Remove } from "@element-plus/icons-vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useProductStore } from "@/stores/admin/productStore.js";
-import { category, productConditions } from "../../utils/constants.js";
+import { category, productConditions } from "@/utils/constants.js";
 
 const productStore = useProductStore();
 const toast = useToast();
@@ -49,6 +49,35 @@ const fetchProducts = async () => {
     pagination.value.pageSize = resp.data.pagination.pageSize;
     pagination.value.totalRecord = resp.data.pagination.totalRecord;
     pagination.value.pageCount = resp.data.pagination.pageCount;
+  }
+};
+
+const editProduct = (productID) => {
+  router.push({
+    path: "editProduct",
+    query: { id: productID },
+  });
+};
+
+const unPublishProduct = async (productID) => {
+  const payload = {
+    productID: productID,
+  };
+
+  const resp = await productStore.unPublishProduct(payload);
+  if (resp.code === 200) {
+    await fetchProducts();
+  }
+};
+
+const publishProduct = async (productID) => {
+  const payload = {
+    productID: productID,
+  };
+
+  const resp = await productStore.publishProduct(payload);
+  if (resp.code === 200) {
+    await fetchProducts();
   }
 };
 
@@ -171,6 +200,30 @@ onMounted(fetchProducts);
             <el-tag :type="row.isActive === true ? 'success' : 'danger'">{{
               row.isActive === true ? "Active" : "Inactive"
             }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="Action" :flex-grow="1">
+          <template #default="{ row }">
+            <el-button
+              @click="editProduct(row.productID)"
+              type="primary"
+              style="color: white"
+              ><el-icon> <Edit /> </el-icon
+            ></el-button>
+            <el-button
+              v-if="row.isActive"
+              type="danger"
+              style="color: white; margin-right: 12px"
+              @click="unPublishProduct(row.productID)"
+              ><el-icon> <Remove /> </el-icon
+            ></el-button>
+            <el-button
+              v-else
+              type="success"
+              style="color: white; margin-right: 12px"
+              @click="publishProduct(row.productID)"
+              ><el-icon> <refresh /> </el-icon
+            ></el-button>
           </template>
         </el-table-column>
       </el-table>

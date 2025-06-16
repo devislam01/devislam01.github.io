@@ -89,6 +89,11 @@ const routes = [
         name: "EditProduct",
         component: () => import("../components/Admin/EditProduct.vue"),
       },
+      {
+        path: "managePayment",
+        name: "ManagePayment",
+        component: () => import("../components/Admin/ManagePayment.vue"),
+      },
     ],
   },
   {

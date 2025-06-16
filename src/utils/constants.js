@@ -160,3 +160,14 @@ export const orderStatus = [
     value: "Completed",
   },
 ];
+
+export const paymentStatus = [
+  {
+    label: "Pending",
+    value: "Pending",
+  },
+  {
+    label: "Paid",
+    value: "Paid",
+  },
+];
