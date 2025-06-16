@@ -364,6 +364,16 @@ watchEffect(async () => {
                   >
                 </div>
               </el-col>
+              <el-col
+                :span="24"
+                style="display: flex; justify-content: left; margin-top: 5px"
+                v-if="item.reason !== null && item.reason !== ''"
+              >
+                <div style="color: #000000">
+                  Reject Reason:
+                  <el-text>{{ item.reason }}</el-text>
+                </div>
+              </el-col>
               <el-col :span="12">
                 <div style="display: flex; align-items: center; gap: 10px">
                   <div
@@ -587,6 +597,16 @@ watchEffect(async () => {
                   round
                   >{{ item.status }}</el-tag
                 >
+              </div>
+            </el-col>
+            <el-col
+              :span="24"
+              style="display: flex; justify-content: left; margin-top: 5px"
+              v-if="item.reason !== null && item.reason !== ''"
+            >
+              <div style="color: #000000">
+                Cancel Reason:
+                <el-text>{{ item.reason }}</el-text>
               </div>
             </el-col>
             <el-col :span="12">
