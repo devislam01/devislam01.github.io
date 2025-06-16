@@ -75,7 +75,7 @@ const checkout = async () => {
   }
 };
 
-const confirmOrder = async () => {
+const confirmOrder = async (paymentMethodID) => {
   const formData = new FormData();
 
   formData.append("OrderID", proceedPaymentRequest.value.orderID);
@@ -84,19 +84,27 @@ const confirmOrder = async () => {
     index,
     item,
   ] of proceedPaymentRequest.value.receiptList.entries()) {
-    if (!item.receipt || item.receipt.length === 0) {
-      toast.info("Please upload your receipts");
-      return;
+    const isQR = paymentMethodID === 2;
+
+    if (isQR) {
+      if (!item.receipt || item.receipt.length === 0) {
+        toast.info("Please upload your receipts");
+        return;
+      }
+      formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
     }
 
     formData.append(`ReceiptList[${index}].PaymentID`, item.paymentID);
-    formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
   }
 
-  const response = await orderStore.confirmOrder(formData);
+  try {
+    const response = await orderStore.confirmOrder(formData);
 
-  if (response.code === 200) {
-    await router.push("/");
+    if (response.code === 200) {
+      await router.push("/");
+    }
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -349,7 +357,7 @@ onMounted(async () => {
             type="primary"
             :loading="loadingStore.loading"
             :disabled="loadingStore.loading"
-            @click="confirmOrder"
+            @click="confirmOrder(1)"
             >Confirm</el-button
           >
         </template>
@@ -435,7 +443,7 @@ onMounted(async () => {
               type="primary"
               :loading="loadingStore.loading"
               :disabled="loadingStore.loading"
-              @click="confirmOrder"
+              @click="confirmOrder(2)"
             >
               Confirm Order
             </el-button>

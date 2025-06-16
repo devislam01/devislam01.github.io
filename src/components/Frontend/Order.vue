@@ -147,14 +147,13 @@ const openDialogRateProduct = (orderItem, item) => {
 };
 
 const requestToCancelOrder = async () => {
-  try {
-    const response = await orderStore.requestToCancelOrder(cancelPayload.value);
-    if (response.code === 200) {
-      toast.success(response.message);
-    }
-    console.log(response);
-  } catch (error) {
-    console.log(error);
+  const response = await orderStore.requestToCancelOrder(cancelPayload.value);
+  if (response.code === 200) {
+    toast.success(response.message);
+    showDialogCancel.value = false;
+    await fetchBuyerOrder();
+  } else {
+    toast.error(resp.message);
   }
 };
 
@@ -164,6 +163,10 @@ const requestToCancelWholeOrder = async () => {
   );
   if (resp.code === 200) {
     toast.success(resp.message);
+    showDialogCancelWholeOrder.value = false;
+    await fetchBuyerOrder();
+  } else {
+    toast.error(resp.message);
   }
 };
 
@@ -171,6 +174,10 @@ const confirmCancel = async () => {
   const response = await orderStore.confirmCancel(approveCancelPayload.value);
   if (response.code === 200) {
     toast.success(response.message);
+    showDialogApproveCancelRequest.value = false;
+    await fetchSellerOrder();
+  } else {
+    toast.error(resp.message);
   }
 };
 
@@ -178,10 +185,14 @@ const rejectCancel = async () => {
   const response = await orderStore.rejectCancel(rejectCancelPayload.value);
   if (response.code === 200) {
     toast.success(response.message);
+    showDialogRejectCancelRequest.value = false;
+    await fetchSellerOrder();
+  } else {
+    toast.error(resp.message);
   }
 };
 
-const confirmOrder = async () => {
+const confirmOrder = async (paymentMethodID) => {
   const formData = new FormData();
 
   formData.append("OrderID", proceedPaymentRequest.value.orderID);
@@ -190,13 +201,17 @@ const confirmOrder = async () => {
     index,
     item,
   ] of proceedPaymentRequest.value.receiptList.entries()) {
-    if (!item.receipt || item.receipt.length === 0) {
-      toast.info("Please upload your receipts");
-      return;
+    const isQR = paymentMethodID === 2;
+
+    if (isQR) {
+      if (!item.receipt || item.receipt.length === 0) {
+        toast.info("Please upload your receipts");
+        return;
+      }
+      formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
     }
 
     formData.append(`ReceiptList[${index}].PaymentID`, item.paymentID);
-    formData.append(`ReceiptList[${index}].Receipt`, item.receipt[0].raw);
   }
 
   try {
@@ -212,31 +227,16 @@ const confirmOrder = async () => {
   }
 };
 
-const markComplete = async () => {
-  try {
-    const payload = {};
-    const response = await orderStore.markComplete(payload);
-    if (response.code === 200) {
-      toast.success("Update Successfully!");
-    }
-    console.log(response);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const markOrderComplete = async (orderID) => {
-  try {
-    const payload = {
-      orderID: orderID,
-    };
-    const response = await orderStore.markOrderComplete(payload);
-    if (response.code === 200) {
-      toast.success(response.message);
-      await fetchSellerOrder();
-    }
-  } catch (error) {
-    console.log(error);
+  const payload = {
+    orderID: orderID,
+  };
+  const resp = await orderStore.markOrderComplete(payload);
+  if (resp.code === 200) {
+    toast.success(resp.message);
+    await fetchSellerOrder();
+  } else {
+    toast.error(resp.message);
   }
 };
 
@@ -270,8 +270,9 @@ const rateProduct = async () => {
   const response = await orderStore.rateProduct(ratingPayload.value);
   if (response.code === 200) {
     toast.success(response.message);
+    showDialogRateProduct.value = false;
+    await fetchBuyerOrder();
   }
-  await router.push(0);
 };
 
 watchEffect(async () => {
@@ -406,7 +407,9 @@ watchEffect(async () => {
                   (order.status === 'Processing' ||
                     order.status === 'PartiallyRequestCancel') &&
                   item.status !== 'RequestCancel' &&
-                  item.status !== 'Completed'
+                  item.status !== 'Cancelled' &&
+                  item.status !== 'Completed' &&
+                  (order.orderItems.length > 1 || seller.items.length > 1)
                 "
                 round
                 color="#0F5841"
@@ -804,7 +807,7 @@ watchEffect(async () => {
           type="primary"
           :loading="loadingStore.loading"
           :disabled="loadingStore.loading"
-          @click="confirmOrder"
+          @click="confirmOrder(2)"
         >
           Confirm Order
         </el-button>
@@ -828,7 +831,7 @@ watchEffect(async () => {
         type="primary"
         :loading="loadingStore.loading"
         :disabled="loadingStore.loading"
-        @click="confirmOrder"
+        @click="confirmOrder(1)"
         >Confirm</el-button
       >
     </template>

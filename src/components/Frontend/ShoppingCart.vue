@@ -4,6 +4,7 @@ import { onMounted, ref } from "vue";
 import { Close, Minus, Plus } from "@element-plus/icons-vue";
 import { useProductStore } from "@/stores/productStore";
 import { useToast } from "vue-toastification";
+import router from "@/router/index.js";
 
 const productStore = useProductStore();
 const toast = useToast();
@@ -44,6 +45,17 @@ const deleteFromCart = async (productID) => {
     cartItemUpdateRequest.value.splice(indexItemRequest, 1);
   }
   await productStore.updateCart(cartItemUpdateRequest.value);
+};
+
+const proceedPayment = () => {
+  if (selectedItems.value.length === 0) {
+    toast.info("You have to select at least 1 item.");
+  } else {
+    router.push({
+      path: "checkout",
+      query: { productID: selectedItems.value },
+    });
+  }
 };
 
 onMounted(async () => {
@@ -151,7 +163,12 @@ const getTotal = () => {
               <el-checkbox :value="item.productID"></el-checkbox>
             </el-checkbox-group>
             <img
-              style="width: 150px; height: 120px; margin-right: 10px; object-fit: contain;"
+              style="
+                width: 150px;
+                height: 120px;
+                margin-right: 10px;
+                object-fit: contain;
+              "
               :src="item.productImage"
               alt=""
             />
@@ -290,16 +307,8 @@ const getTotal = () => {
           border: none;
         "
         size="large"
-        ><RouterLink
-          :to="
-            selectedItems.length === 0
-              ? ''
-              : { path: 'checkout', query: { productID: selectedItems } }
-          "
-          style="color: #ffffff"
-          @click="toast.info('You have to select at least 1 item.')"
-          >Proceed to Checkout</RouterLink
-        ></el-button
+        @click="proceedPayment"
+        >Proceed to Checkout</el-button
       >
     </el-col>
   </el-row>
