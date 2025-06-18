@@ -209,6 +209,7 @@ const banUser = async (userID) => {
   };
   const resp = await userStore.banUser(payload);
   if (resp.code === 200) {
+    toast.success(resp.message);
     setTimeout(() => {
       router.go(0);
     }, 1500);
@@ -221,6 +222,7 @@ const reinstateUser = async (userID) => {
   };
   const resp = await userStore.reinstateUser(payload);
   if (resp.code === 200) {
+    toast.success(resp.message);
     setTimeout(() => {
       router.go(0);
     }, 1500);
@@ -234,6 +236,7 @@ const submitResetPassword = async () => {
   };
   const resp = await userStore.resetPassword(payload);
   if (resp.code === 200) {
+    toast.success(resp.message);
     setTimeout(() => {
       router.go(0);
     }, 1500);
@@ -360,20 +363,27 @@ onMounted(fetchUsers);
               style="color: white"
               ><el-icon> <Edit /> </el-icon
             ></el-button>
-            <el-button
+            <el-tooltip
+              content="Ban User"
+              placement="top"
               v-if="scope.row.status === 'Active'"
-              type="danger"
-              style="color: white; margin-right: 12px"
-              @click="banUser(scope.row.userID)"
-              ><el-icon> <Remove /> </el-icon
-            ></el-button>
-            <el-button
-              v-else
-              type="success"
-              style="color: white; margin-right: 12px"
-              @click="reinstateUser(scope.row.userID)"
-              ><el-icon> <Refresh /> </el-icon
-            ></el-button>
+            >
+              <el-button
+                type="danger"
+                style="color: white; margin-right: 12px"
+                @click="banUser(scope.row.userID)"
+              >
+                <el-icon><Remove /></el-icon>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip content="Reinstate User" placement="top" v-else>
+              <el-button
+                type="success"
+                style="color: white; margin-right: 12px"
+                @click="reinstateUser(scope.row.userID)"
+                ><el-icon> <Refresh /> </el-icon
+              ></el-button>
+            </el-tooltip>
             <el-dropdown placement="bottom-end">
               <el-button type="info" style="color: white">
                 <el-icon><More /></el-icon>

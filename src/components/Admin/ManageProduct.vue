@@ -66,6 +66,7 @@ const unPublishProduct = async (productID) => {
 
   const resp = await productStore.unPublishProduct(payload);
   if (resp.code === 200) {
+    toast.success(resp.message);
     await fetchProducts();
   }
 };
@@ -77,6 +78,7 @@ const publishProduct = async (productID) => {
 
   const resp = await productStore.publishProduct(payload);
   if (resp.code === 200) {
+    toast.success(resp.message);
     await fetchProducts();
   }
 };
@@ -210,20 +212,26 @@ onMounted(fetchProducts);
               style="color: white"
               ><el-icon> <Edit /> </el-icon
             ></el-button>
-            <el-button
+            <el-tooltip
+              content="Unpublish Product"
+              placement="top"
               v-if="row.isActive"
-              type="danger"
-              style="color: white; margin-right: 12px"
-              @click="unPublishProduct(row.productID)"
-              ><el-icon> <Remove /> </el-icon
-            ></el-button>
-            <el-button
-              v-else
-              type="success"
-              style="color: white; margin-right: 12px"
-              @click="publishProduct(row.productID)"
-              ><el-icon> <refresh /> </el-icon
-            ></el-button>
+            >
+              <el-button
+                type="danger"
+                style="color: white; margin-right: 12px"
+                @click="unPublishProduct(row.productID)"
+                ><el-icon> <Remove /> </el-icon
+              ></el-button>
+            </el-tooltip>
+            <el-tooltip content="Publish Product" placement="top" v-else>
+              <el-button
+                type="success"
+                style="color: white; margin-right: 12px"
+                @click="publishProduct(row.productID)"
+                ><el-icon> <refresh /> </el-icon
+              ></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>

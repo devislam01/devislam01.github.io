@@ -1,15 +1,12 @@
 <script setup>
-import {
-  gender,
-  paymentMethods,
-  paymentStatus,
-  ResidentialColleges,
-} from "@/utils/constants.js";
+import { paymentMethods, paymentStatus } from "@/utils/constants.js";
 import { onMounted, ref } from "vue";
 import { usePaymentStore } from "@/stores/admin/paymentStore.js";
-import { Delete, Edit, Plus, ZoomIn } from "@element-plus/icons-vue";
+import { Edit } from "@element-plus/icons-vue";
+import { useToast } from "vue-toastification";
 
 const paymentStore = usePaymentStore();
+const toast = useToast();
 
 const editPaymentFormRef = ref();
 const editDialogPaymentVisible = ref(false);
@@ -85,6 +82,7 @@ const editPayment = async (formRef) => {
 
   const resp = await paymentStore.updatePayment(payload);
   if (resp.code === 200) {
+    toast.success(resp.message);
     editDialogPaymentVisible.value = false;
     await fetchPayments();
   }

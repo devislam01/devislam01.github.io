@@ -38,7 +38,7 @@ const checkQRCode = async () => {
     response.paymentQRCode === "https://localhost:7047/" ||
     response.paymentQRCode === ""
   ) {
-    toast.warning("Please upload the QR Code before add product!");
+    toast.info("Please upload the QR Code before add product!");
     setTimeout(() => {
       if (router.currentRoute.value.path !== "/Profile") {
         router.push("/Profile");

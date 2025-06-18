@@ -3,68 +3,75 @@ import { useDashboardStore } from "@/stores/admin/dashboardStore.js";
 
 const input = ref("");
 
-import { ref, onMounted, onBeforeMount } from "vue";
+import { ref, onMounted, onBeforeMount, watch } from "vue";
 import * as echarts from "echarts";
 
 const chartRef = ref(null);
+let myChart = null;
 const dashboardStore = useDashboardStore();
 
 const salesOverview = ref([]);
 const usersOverview = ref([]);
+const chartOverview = ref({
+  months: [],
+  salesRevenue: [],
+  numberOfOrders: [],
+});
+
 onBeforeMount(async () => {
   const resp = await dashboardStore.getDashboard();
+
   if (resp.code === 200) {
     salesOverview.value = resp.data.sales;
     usersOverview.value = resp.data.users;
+    chartOverview.value.months = resp.data.orderChartData.months;
+    chartOverview.value.salesRevenue = resp.data.orderChartData.salesRevenue;
+    chartOverview.value.numberOfOrders =
+      resp.data.orderChartData.numberOfOrders;
   }
-
-  console.log(salesOverview.value);
-  console.log(usersOverview.value);
 });
+
+watch(
+  chartOverview,
+  (val) => {
+    if (myChart && val.months.length > 0) {
+      const option = {
+        tooltip: {
+          trigger: "axis",
+        },
+        xAxis: {
+          type: "category",
+          data: val.months,
+        },
+        yAxis: {
+          type: "value",
+          min: 0,
+        },
+        series: [
+          {
+            name: "Sales Revenue",
+            data: val.salesRevenue,
+            type: "line",
+            smooth: true,
+          },
+          {
+            name: "Number of Orders",
+            data: val.numberOfOrders,
+            type: "line",
+            smooth: true,
+          },
+        ],
+      };
+      myChart.setOption(option);
+      myChart.resize();
+    }
+  },
+  { immediate: true, deep: true }
+);
+
 onMounted(() => {
   if (chartRef.value) {
-    const myChart = echarts.init(chartRef.value);
-
-    const option = {
-      tooltip: {
-        trigger: "axis",
-      },
-      xAxis: {
-        type: "category",
-        data: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ],
-      },
-      yAxis: {
-        type: "value",
-      },
-      series: [
-        {
-          name: "Sales Revenue",
-          data: [130, 25, 234, 164, 89, 188, 79, 130, 25, 234, 164, 89],
-          type: "line",
-          smooth: true,
-        },
-        {
-          name: "Number of Orders",
-          data: [15, 40, 100, 50, 60, 90, 30, 70, 20, 110, 75, 95],
-          type: "line",
-          smooth: true,
-        },
-      ],
-    };
-    myChart.setOption(option);
+    myChart = echarts.init(chartRef.value);
   }
 });
 </script>

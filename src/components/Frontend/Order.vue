@@ -279,6 +279,7 @@ watchEffect(async () => {
   <el-tabs type="border-card" v-model="activeName">
     <el-tab-pane label="Purchase List" name="first">
       <el-row
+        v-if="buyerOrderList.length > 0"
         v-for="(order, index) in buyerOrderList"
         :key="index"
         style="
@@ -534,11 +535,15 @@ watchEffect(async () => {
           >
         </el-col>
       </el-row>
+      <el-row v-else>
+        <el-empty style="margin: auto" description="Go Shopping Now !" />
+      </el-row>
     </el-tab-pane>
 
     <!-- SELLER-->
     <el-tab-pane label="Sales List" name="second">
       <el-row
+        v-if="sellerOrderList.length > 0"
         v-for="(order, index) in sellerOrderList"
         :key="index"
         style="
@@ -728,6 +733,9 @@ watchEffect(async () => {
             >Complete Order</el-button
           >
         </el-col>
+      </el-row>
+      <el-row v-else>
+        <el-empty style="margin: auto" description="No Orders Now !" />
       </el-row>
     </el-tab-pane>
   </el-tabs>
