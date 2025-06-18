@@ -31,7 +31,12 @@ const applyFilter = async () => {
 };
 
 const clearFilter = async () => {
-  const response = await productStore.getProductList();
+  checkboxes.value = [];
+  const payload = {
+    categoryID: [],
+    search: productStore.filters.search || "",
+  };
+  const response = await productStore.getProductList(payload);
   pagination.value = response.pagination;
 };
 

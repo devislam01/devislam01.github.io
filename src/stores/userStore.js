@@ -26,5 +26,8 @@ export const useUserStore = defineStore("users", {
     async forgetPassword(payload) {
       return await axios.post("/user/forgetPassword", payload);
     },
+    async resetPassword(payload) {
+      return await axios.post(`/user/resetPassword`, payload);
+    },
   },
 });

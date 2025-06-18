@@ -1,44 +1,38 @@
 <script setup>
-import { ElMessage, ElMessageBox } from "element-plus";
 import { ArrowLeftBold } from "@element-plus/icons-vue";
 import { ref } from "vue";
 import { useUserStore } from "@/stores/userStore.js";
+import { useToast } from "vue-toastification";
 
 const userStore = useUserStore();
-const input = ref("");
+const toast = useToast();
+const formRef = ref();
+const formData = ref({
+  email: "",
+});
 
-const open = () => {
-  ElMessageBox.confirm(
-    "A temporary password will be sent to your email address shortly.",
-    "Success",
-    {
-      confirmButtonText: "OK",
-      type: "success",
-    }
-  )
+const submitForm = async () => {
+  await formRef.value
+    .validate()
     .then(async () => {
       const payload = {
-        Email: input.value,
+        email: formData.value.email,
       };
       const response = await userStore.forgetPassword(payload);
-
-      ElMessage({
-        type: "success",
-        message: response.message,
-      });
+      if (response.code === 200) {
+        toast.success(response.message);
+      }
     })
-    .catch(() => {
-      ElMessage({
-        type: "error",
-        message: "Send email canceled",
-      });
+    .catch((error) => {
+      toast.error(error.email[0].message);
     });
 };
+
 const rules = ref({
   email: [
     { required: true, message: "Please input Email Address", trigger: "blur" },
     {
-      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       message: "Please enter a valid email address",
       trigger: "blur",
     },
@@ -47,7 +41,7 @@ const rules = ref({
 </script>
 
 <template>
-  <el-form :rules="rules">
+  <el-form ref="formRef" :model="formData" :rules="rules">
     <div
       style="
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
@@ -96,23 +90,28 @@ const rules = ref({
           Enter the email associated with your account and we will send you a
           temporary password.
         </div>
-        <div style="float: left; margin: 30px 0 -20px 0">
-          <el-form-item label="Email" prop="email"></el-form-item>
+        <div style="margin-top: 1.2rem">
+          <el-form-item label="Email" prop="email" style="align-items: center">
+            <el-input
+              v-model="formData.email"
+              placeholder="Please enter your Email"
+              style="height: 40px"
+              label="Email"
+              prop="email"
+            ></el-input>
+          </el-form-item>
+        </div>
+        <div style="width: 100px; margin: 1.2rem auto 0 auto">
+          <el-button
+            plain
+            round
+            color="#0F5841"
+            @click="submitForm"
+            style="width: 100px"
+            >Send</el-button
+          >
         </div>
       </div>
-      <el-input
-        v-model="input"
-        placeholder="Please enter your Email"
-        style="height: 40px"
-      ></el-input>
-      <el-button
-        plain
-        round
-        color="#0F5841"
-        @click="open"
-        style="margin-top: 30px; width: 100px"
-        >Send</el-button
-      >
     </div>
   </el-form>
 </template>
