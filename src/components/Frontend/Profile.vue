@@ -11,11 +11,9 @@ const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 
 const handleRemove = (file) => {
-  // Remove the file manually from form.productImage
   form.value.paymentQRCode = form.value.paymentQRCode.filter(
     (f) => f.uid !== file.uid
   );
-  console.log("After remove:", form.value.paymentQRCode);
 };
 
 const handlePictureCardPreview = (uploadFile) => {
@@ -26,7 +24,6 @@ const handlePictureCardPreview = (uploadFile) => {
 const toast = useToast();
 const userStore = useUserStore();
 const loadingStore = useLoadingStore();
-const route = useRoute();
 const upload = ref();
 const formRef = ref(null);
 const form = ref({
@@ -56,51 +53,39 @@ const updateUserProfile = async () => {
     if (response.code === 200) {
       toast.success("Update Successfully!");
     }
-
-    console.log(response);
   } catch (error) {
     console.log(error);
   }
 };
 
 const fetchUserDetail = async () => {
-  try {
-    const response = await userStore.getUserProfile();
-    console.log(response);
-    form.value.userName = response.userName;
-    form.value.email = response.email;
-    form.value.phoneNumber = response.phoneNumber;
-    form.value.userGender = response.userGender;
-    form.value.address = response.address;
-    form.value.college = response.residentialCollege;
-    if (
-      response.paymentQRCode !== "https://localhost:7047/" &&
-      response.paymentQRCode !== ""
-    ) {
-      form.value.paymentQRCode = [
-        {
-          name: "QR Code.jpg",
-          url: `${response.paymentQRCode}`, // full URL for preview
-          status: "finished",
-        },
-      ];
-    }
-  } catch (error) {
-    console.log(error);
+  const response = await userStore.getUserProfile();
+
+  form.value.userName = response.userName;
+  form.value.email = response.email;
+  form.value.phoneNumber = response.phoneNumber;
+  form.value.userGender = response.userGender;
+  form.value.address = response.address;
+  form.value.college = response.residentialCollege;
+  if (
+    response.paymentQRCode !== "https://localhost:7047/" &&
+    response.paymentQRCode !== ""
+  ) {
+    form.value.paymentQRCode = [
+      {
+        name: "QR Code.jpg",
+        url: `${response.paymentQRCode}`, // full URL for preview
+        status: "finished",
+      },
+    ];
   }
 };
 
 const handleExceed = (files) => {
-  // upload.value!.clearFiles()
   const file = files[0];
   file.uid = genFileId();
   toast.warning("You can only upload one QR code.");
-  // upload.value!.handleStart(file)
 };
-
-// const submitUpload = () => {
-//   upload.value!.submit()
-// }
 
 onMounted(async () => {
   await fetchUserDetail();

@@ -250,19 +250,11 @@ const redirectToWhatsApp = (phoneNo) => {
 };
 
 const fetchBuyerOrder = async () => {
-  try {
-    buyerOrderList.value = await orderStore.getBuyerOrder();
-  } catch (error) {
-    toast.error(error);
-  }
+  buyerOrderList.value = await orderStore.getBuyerOrder();
 };
 
 const fetchSellerOrder = async () => {
-  try {
-    sellerOrderList.value = await orderStore.getSellerOrder();
-  } catch (error) {
-    toast.error(error);
-  }
+  sellerOrderList.value = await orderStore.getSellerOrder();
 };
 
 const rateProduct = async () => {

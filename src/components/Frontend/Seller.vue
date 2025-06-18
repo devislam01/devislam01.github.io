@@ -33,24 +33,19 @@ const header = ref({
 });
 
 const checkQRCode = async () => {
-  try {
-    // console.log("inside the check qr code function");
-    const response = await userStore.getUserProfile();
-    if (
-      response.paymentQRCode == "https://localhost:7047/" ||
-      response.paymentQRCode == ""
-    ) {
-      toast.warning("Please upload the QR Code before add product!");
-      setTimeout(() => {
-        if (router.currentRoute.value.path !== "/Profile") {
-          router.push("/Profile");
-        } else {
-          router.go(0); // 强制刷新
-        }
-      }, 2000);
-    }
-  } catch (error) {
-    console.log(error);
+  const response = await userStore.getUserProfile();
+  if (
+    response.paymentQRCode === "https://localhost:7047/" ||
+    response.paymentQRCode === ""
+  ) {
+    toast.warning("Please upload the QR Code before add product!");
+    setTimeout(() => {
+      if (router.currentRoute.value.path !== "/Profile") {
+        router.push("/Profile");
+      } else {
+        router.go(0);
+      }
+    }, 2000);
   }
 };
 

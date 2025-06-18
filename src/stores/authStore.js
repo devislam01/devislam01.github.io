@@ -30,7 +30,13 @@ export const useAuthStore = defineStore("auth", {
       const payload = {
         refreshToken: this.refreshToken,
       };
-      return await axios.post(`auth/logout`, payload);
+      const resp = await axios.post(`auth/logout`, payload);
+
+      if (resp.code === 200) {
+        this.$reset();
+      }
+
+      return resp;
     },
   },
 });
