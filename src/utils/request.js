@@ -2,9 +2,12 @@ import { useToast } from "vue-toastification";
 import axios from "axios";
 import { logout } from "@/utils/logout.js";
 import { useLoadingStore } from "@/stores/loadingStore";
-import { HttpCode } from "./constants";
+import { useAuthStore } from "@/stores/authStore.js";
 
 const toast = useToast();
+let isRefreshing = false;
+let refreshTokenPromise = null;
+let hasLoggedOut = false;
 
 const service = axios.create({
   baseURL: "https://localhost:7047/api",
@@ -16,7 +19,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    const token = useAuthStore().accessToken;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -43,38 +46,61 @@ service.interceptors.response.use(
     return response.data;
   },
   async (error) => {
-    if (error.response) {
-      console.log(error.response);
-      const { status, data } = error.response;
-      const errorMessage =
-        data?.Message || HttpCode[status] || `Request failed (${status})`;
+    const { config, response } = error;
 
-      toast.error(errorMessage);
-
-      if (status === 401) {
-        localStorage.removeItem("token");
-        if (!window.location.pathname.includes("/login")) {
-          logout();
-          window.location.href = "/login";
-        }
-      }
-    } else if (error.code === "ECONNABORTED") {
-      toast.error("Request timeout. Please try again");
-    } else if (error.request) {
-      toast.error("Session Expired. Please login again");
-
-      localStorage.removeItem("token");
-      if (!window.location.pathname.includes("/login")) {
-        logout();
-      }
-    } else {
-      toast.error("Request configuration error");
-    }
-
-    if (error.config?.showLoading !== false) {
+    if (config?.showLoading !== false) {
       useLoadingStore().hide();
     }
 
+    if (!response || !config) {
+      toast.error("Network or configuration error");
+      return Promise.reject(error);
+    }
+
+    const { status } = response;
+    const isRefreshingTokenRequest = config.url.includes("/auth/refresh");
+
+    if (status === 401 && !isRefreshing && !isRefreshingTokenRequest) {
+      isRefreshing = true;
+
+      try {
+        const resp = await useAuthStore().getRefreshToken();
+
+        if (resp.code === 200) {
+          const newToken = resp.data.accessToken;
+          refreshTokenPromise = Promise.resolve(newToken);
+        }
+      } catch (e) {
+        if (!hasLoggedOut) {
+          hasLoggedOut = true;
+          await logout();
+        }
+        toast.error(e.response.data.Message);
+        return Promise.reject(e);
+      } finally {
+        isRefreshing = false;
+      }
+
+      try {
+        const newToken = await refreshTokenPromise;
+        if (newToken) {
+          config.headers.Authorization = `Bearer ${newToken}`;
+          return service(config);
+        }
+      } catch (e) {
+        toast.error(e.response.data.Message);
+        return Promise.reject(e);
+      }
+    }
+
+    if (status === 401 && isRefreshingTokenRequest) {
+      if (!hasLoggedOut) {
+        hasLoggedOut = true;
+        await logout();
+      }
+    }
+
+    toast.error(error.response.data.Message);
     return Promise.reject(error);
   }
 );

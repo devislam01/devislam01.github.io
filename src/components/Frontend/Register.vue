@@ -34,27 +34,44 @@ const form = ref({
 const rules = ref({
   email: [
     { required: true, message: "Please input Email Address", trigger: "blur" },
+    {
+      pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      message: "Please enter a valid email address",
+      trigger: "blur",
+    },
   ],
   password: [
     { required: true, message: "Please input Password", trigger: "blur" },
+    {
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/,
+      message:
+        "Password must include uppercase, lowercase, and special character",
+      trigger: "blur",
+    },
   ],
   confirmPassword: [
-  {
-    required: true,
-    message: "Please confirm your Password",
-    trigger: "blur",
-  },
-  {
-    validator: (rule, value, callback) => {
-      if (value !== form.value.password) {
-        callback(new Error("Passwords do not match"));
-      } else {
-        callback();
-      }
+    {
+      required: true,
+      message: "Please confirm your Password",
+      trigger: "blur",
     },
-    trigger: "blur",
-  },
-],
+    {
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/,
+      message:
+        "Password must include uppercase, lowercase, and special character",
+      trigger: "blur",
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (value !== form.value.password) {
+          callback(new Error("Passwords do not match"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
   username: [
     { required: true, message: "Please input Username", trigger: "blur" },
   ],

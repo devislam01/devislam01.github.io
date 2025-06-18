@@ -38,6 +38,11 @@ const open = () => {
 const rules = ref({
   email: [
     { required: true, message: "Please input Email Address", trigger: "blur" },
+    {
+      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: "Please enter a valid email address",
+      trigger: "blur",
+    },
   ],
 });
 </script>

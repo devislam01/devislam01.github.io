@@ -8,8 +8,10 @@ import { useToast } from "vue-toastification";
 import { claimTypes } from "@/utils/constants.js";
 import router from "@/router/index.js";
 import { parseISO, format } from "date-fns";
+import { useAuthStore } from "@/stores/authStore.js";
 
 const productStore = useProductStore();
+const authStore = useAuthStore();
 const toast = useToast();
 const route = useRoute();
 
@@ -35,7 +37,7 @@ const pagination = ref({
   totalRecord: 0,
 });
 
-const token = localStorage.getItem("accessToken") || "";
+const token = authStore.accessToken || "";
 const userID = JSON.parse(atob(token.split(".")[1]))[claimTypes.userId];
 
 const addtoCart = async (isBuyNow = false) => {
@@ -70,16 +72,12 @@ watchEffect(() => {
 });
 
 const fetchProductDetail = async () => {
-  try {
-    const response = await productStore.getProductDetail({
-      productID: Number(route.query.id),
-    });
+  const response = await productStore.getProductDetail({
+    productID: Number(route.query.id),
+  });
 
-    info.value = response.productDetail;
-    sellerInfo.value = response.sellerDetail;
-  } catch (error) {
-    toast.error(error);
-  }
+  info.value = response.productDetail;
+  sellerInfo.value = response.sellerDetail;
 };
 
 const fetchFeedbackList = async () => {

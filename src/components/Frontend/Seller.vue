@@ -6,10 +6,12 @@ import { category } from "@/utils/constants";
 import { useToast } from "vue-toastification";
 import router from "@/router";
 import { Delete, Edit, Plus, ZoomIn } from "@element-plus/icons-vue";
+import { useAuthStore } from "@/stores/authStore.js";
 
 const toast = useToast();
 const productStore = useProductStore();
 const userStore = useUserStore();
+const authStore = useAuthStore();
 
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
@@ -27,7 +29,7 @@ const form = ref({
 const productList = ref([]);
 const uploadRef = ref();
 const header = ref({
-  Authorization: "Bearer " + localStorage.getItem("accessToken"),
+  Authorization: "Bearer " + authStore.accessToken,
 });
 
 const checkQRCode = async () => {

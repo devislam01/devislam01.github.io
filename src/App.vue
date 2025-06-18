@@ -7,13 +7,13 @@
 <script setup>
 import { watch } from "vue";
 import { useSignalR } from "@/composables/useSignalR";
-import { useUserStore } from "@/stores/userStore.js";
+import { useAuthStore } from "@/stores/authStore.js";
 
-const userStore = useUserStore();
+const authStore = useAuthStore();
 const { startConnection } = useSignalR();
 
 watch(
-  () => userStore.token,
+  () => authStore.accessToken,
   (newToken) => {
     if (newToken) {
       startConnection();

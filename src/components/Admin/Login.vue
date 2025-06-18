@@ -1,13 +1,11 @@
 <script setup>
-import Breadcrumb from "../Common/Breadcrumb.vue";
 import { ref } from "vue";
-import TopNavigation from "../Common/TopNavigation.vue";
-import { useUserStore } from "@/stores/userStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useLoadingStore } from "@/stores/loadingStore.js";
 
-const userStore = useUserStore();
+const authStore = useAuthStore();
 const loadingStore = useLoadingStore();
 const toast = useToast();
 const router = useRouter();
@@ -17,14 +15,23 @@ const form = ref({
   password: "",
 });
 
-const input = ref("");
-
 const rules = ref({
   email: [
     { required: true, message: "Please input Email Address", trigger: "blur" },
+    {
+      pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      message: "Please enter a valid email address",
+      trigger: "blur",
+    },
   ],
   password: [
     { required: true, message: "Please input Password", trigger: "blur" },
+    {
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/,
+      message:
+        "Password must include uppercase, lowercase, and special character",
+      trigger: "blur",
+    },
   ],
 });
 
@@ -36,7 +43,7 @@ const loginUser = async () => {
     password: form.value.password,
   };
 
-  await userStore.loginUser(payload);
+  await authStore.loginUser(payload);
 
   toast.success("Login Success");
   await router.push({ path: "/admin", query: { showMessageBox: "true" } });

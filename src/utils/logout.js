@@ -1,22 +1,22 @@
 import { useSignalR } from "@/composables/useSignalR.js";
 import { useToast } from "vue-toastification";
-import { useUserStore } from "@/stores/userStore.js";
+import { useAuthStore } from "@/stores/authStore.js";
 
 export async function logout() {
   const toast = useToast();
-  const userStore = useUserStore();
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
+  const authStore = useAuthStore();
 
-  userStore.token = "";
-  toast.success("Logout successfully");
+  const resp = await authStore.logoutUser();
+  if (resp.code === 200) {
+    toast.success(resp.message);
 
-  const { stopConnection } = useSignalR();
-  await stopConnection();
+    const { stopConnection } = useSignalR();
+    await stopConnection();
 
-  if (!window.location.pathname.includes("/login")) {
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 3000);
+    if (!window.location.pathname.includes("/login")) {
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 3000);
+    }
   }
 }

@@ -2,18 +2,8 @@ import { defineStore } from "pinia";
 import axios from "@/utils/request.js";
 
 export const useUserStore = defineStore("users", {
-  state: () => ({
-    token: localStorage.getItem("accessToken") || "",
-  }),
+  state: () => ({}),
   actions: {
-    async loginUser(payload) {
-      const resp = await axios.post("/Auth/login", payload);
-
-      localStorage.setItem("accessToken", resp.data.accessToken);
-      localStorage.setItem("refreshToken", resp.data.refreshToken);
-
-      this.token = resp.data.accessToken;
-    },
     async registerUser(payload) {
       await axios.post("/User/register", payload, {
         headers: {
