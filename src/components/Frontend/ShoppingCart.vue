@@ -1,5 +1,4 @@
 <script setup>
-import Breadcrumb from "../Common/Breadcrumb.vue";
 import { onMounted, ref } from "vue";
 import { Close, Minus, Plus } from "@element-plus/icons-vue";
 import { useProductStore } from "@/stores/productStore";
@@ -72,7 +71,6 @@ const getTotal = () => {
 </script>
 
 <template>
-  <Breadcrumb></Breadcrumb>
   <el-row>
     <div
       style="

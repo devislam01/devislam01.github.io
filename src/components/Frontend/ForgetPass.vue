@@ -1,5 +1,4 @@
 <script setup>
-import Breadcrumb from "../Common/Breadcrumb.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ArrowLeftBold } from "@element-plus/icons-vue";
 import { ref } from "vue";
@@ -48,7 +47,6 @@ const rules = ref({
 </script>
 
 <template>
-  <Breadcrumb></Breadcrumb>
   <el-form :rules="rules">
     <div
       style="

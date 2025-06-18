@@ -26,12 +26,6 @@ const rules = ref({
   ],
   password: [
     { required: true, message: "Please input Password", trigger: "blur" },
-    {
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/,
-      message:
-        "Password must include uppercase, lowercase, and special character",
-      trigger: "blur",
-    },
   ],
 });
 

@@ -1,5 +1,4 @@
 <script setup>
-import Breadcrumb from "../Common/Breadcrumb.vue";
 import { ref, watchEffect } from "vue";
 import { useToast } from "vue-toastification";
 import { useOrderStore } from "@/stores/orderStore";
@@ -285,7 +284,6 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <Breadcrumb></Breadcrumb>
   <el-tabs type="border-card" v-model="activeName">
     <el-tab-pane label="Purchase List" name="first">
       <el-row

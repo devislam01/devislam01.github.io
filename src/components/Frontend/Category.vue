@@ -1,6 +1,6 @@
 <script setup>
 import { Operation } from "@element-plus/icons-vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useProductStore } from "@/stores/productStore";
 import { category } from "@/utils/constants";
 import { useSignalR } from "@/composables/useSignalR.js";
@@ -13,52 +13,52 @@ const { startConnection } = useSignalR();
 const toast = useToast();
 
 const checkboxes = ref();
-const productList = ref([]);
-const pagination = ref({
-  pageNumber: 1,
-  pageSize: 10,
-  totalRecord: 0,
-});
+const productList = computed(() => productStore.productList);
+const pagination = computed(() => productStore.pagination);
 
 const fetchProductList = async () => {
   const response = await productStore.getProductList();
-  productList.value = response.data;
   pagination.value = response.pagination;
 };
 
 const applyFilter = async () => {
   const payload = {
-    CategoryID: checkboxes.value,
+    categoryID: checkboxes.value,
+    search: productStore.filters.search || "",
   };
   const response = await productStore.getProductList(payload);
-  productList.value = response.data;
+  pagination.value = response.pagination;
 };
 
 const clearFilter = async () => {
   const response = await productStore.getProductList();
-  productList.value = response.data;
   pagination.value = response.pagination;
 };
 
-const changePage = async () => {
+const changePage = async (page) => {
+  productStore.pagination.pageNumber = page;
+
   const payload = {
     pageNumber: pagination.value.pageNumber,
     pageSize: pagination.value.pageSize,
+    search: productStore.filters.search || "",
+    categoryID: checkboxes.value,
   };
   const response = await productStore.getProductList(payload);
-
-  productList.value = response.data;
   pagination.value = response.pagination;
 };
 
-const changeSize = async () => {
+const changeSize = async (size) => {
+  productStore.pagination.pageSize = size;
+  productStore.pagination.pageNumber = 1;
+
   const payload = {
     pageNumber: pagination.value.pageNumber,
     pageSize: pagination.value.pageSize,
+    search: productStore.filters.search || "",
+    categoryID: checkboxes.value,
   };
   const response = await productStore.getProductList(payload);
-
-  productList.value = response.data;
   pagination.value = response.pagination;
 };
 

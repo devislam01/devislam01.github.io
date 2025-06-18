@@ -1,5 +1,4 @@
 <script setup>
-import Breadcrumb from "../Common/Breadcrumb.vue";
 import { ref } from "vue";
 import { useUserStore } from "@/stores/userStore";
 import { useToast } from "vue-toastification";
@@ -125,7 +124,6 @@ const registerUser = async () => {
 </script>
 
 <template>
-  <Breadcrumb></Breadcrumb>
   <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
     <el-row
       style="

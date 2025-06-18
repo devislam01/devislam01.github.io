@@ -1,5 +1,4 @@
 <script setup>
-import Breadcrumb from "../Common/Breadcrumb.vue";
 import { onMounted, ref } from "vue";
 import { useProductStore } from "@/stores/productStore";
 import { useRoute, useRouter } from "vue-router";
@@ -114,7 +113,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Breadcrumb></Breadcrumb>
   <el-form ref="formRef" :model="form">
     <el-col
       :span="24"

@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
-import Breadcrumb from "../Common/Breadcrumb.vue";
 import { ShoppingCart } from "@element-plus/icons-vue";
 import { useProductStore } from "@/stores/productStore";
 import { useRoute } from "vue-router";
@@ -98,7 +97,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Breadcrumb></Breadcrumb>
   <el-row style="margin-top: 1.5rem; padding: 30px" :gutter="20">
     <el-col :span="12" style="padding: 20px; border: solid">
       <el-carousel trigger="click" height="350px">

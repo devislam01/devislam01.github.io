@@ -9,7 +9,8 @@ const input = ref("");
 
 const search = async () => {
   const payload = {
-    search: input.value,
+    search: input.value ?? "",
+    categoryID: productStore.filters.categoryID,
   };
   await productStore.getProductList(payload);
 };
@@ -21,7 +22,7 @@ const search = async () => {
       <el-col :span="9">
         <el-menu-item index="0">
           <img
-            style="width: 275px; margin-top: 10px;"
+            style="width: 275px; margin-top: 10px"
             src="/src/assets/PrelovedNoBack.png"
             alt="Element logo"
           />
@@ -42,7 +43,7 @@ const search = async () => {
           <el-input
             v-model="input"
             placeholder="Search for Products..."
-            @change="search"
+            @keyup="search"
           >
             <template #prefix>
               <span style="display: flex; align-items: center">
@@ -71,7 +72,9 @@ const search = async () => {
                     >My Order</RouterLink
                   ></el-dropdown-item
                 >
-                <el-dropdown-item @click="logout" style="color: #0f5841; font-weight: 500;"
+                <el-dropdown-item
+                  @click="logout"
+                  style="color: #0f5841; font-weight: 500"
                   >Logout</el-dropdown-item
                 >
               </el-dropdown-menu>

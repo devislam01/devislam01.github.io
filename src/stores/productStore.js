@@ -3,13 +3,39 @@ import axios from "@/utils/request.js";
 
 export const useProductStore = defineStore("products", {
   state: () => ({
+    productList: [],
     error: null,
     data: null,
+    filters: {
+      search: "",
+      categoryID: null,
+    },
+    pagination: {
+      pageNumber: 1,
+      pageSize: 10,
+      totalRecord: 0,
+    },
   }),
+  persist: true,
   actions: {
-    async getProductList(payload = null) {
+    async getProductList(payload = {}) {
+      if (typeof payload.search !== "undefined") {
+        this.filters.search = payload.search;
+      } else if (this.filters.search) {
+        payload.search = this.filters.search;
+      }
+
+      if (typeof payload.categoryID !== "undefined") {
+        this.filters.categoryID = payload.categoryID;
+      } else if (this.filters.categoryID) {
+        payload.categoryID = this.filters.categoryID;
+      }
+
       const response = await axios.post(`product/getProductList`, payload);
-      this.data = response.data;
+
+      this.productList = response.data.data;
+      this.pagination = response.data.pagination;
+
       return response.data;
     },
     async getSpecificProductList() {

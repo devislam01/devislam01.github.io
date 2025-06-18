@@ -1,5 +1,4 @@
 <script setup>
-import Breadcrumb from "../Common/Breadcrumb.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useOrderStore } from "@/stores/orderStore";
@@ -115,7 +114,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Breadcrumb></Breadcrumb>
   <el-row>
     <div
       style="
