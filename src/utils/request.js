@@ -3,13 +3,11 @@ import axios from "axios";
 import { logout } from "@/utils/logout.js";
 import { useLoadingStore } from "@/stores/loadingStore";
 import { useAuthStore } from "@/stores/authStore.js";
-import router from "@/router/index.js";
 
 const toast = useToast();
 let isRefreshing = false;
 let refreshTokenPromise = null;
 let hasLoggedOut = false;
-let globalAbortController = new AbortController();
 
 const service = axios.create({
   baseURL: "https://localhost:7047/api",
@@ -22,26 +20,6 @@ const service = axios.create({
 service.interceptors.request.use(
   async (config) => {
     const token = useAuthStore().accessToken;
-
-    const isPublicAPI =
-      config.url?.includes("/product/getProductList") ||
-      config.url?.includes("/Auth/login");
-
-    if (!token && !isPublicAPI) {
-      globalAbortController.abort();
-      globalAbortController = new AbortController();
-
-      toast.info("Please log in for further details.");
-      await router.push("/login");
-
-      return Promise.reject({
-        name: "UnauthorizedAccess",
-        message: "Unauthorized access",
-      });
-    }
-
-    config.signal = globalAbortController.signal;
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
