@@ -10,7 +10,7 @@ let refreshTokenPromise = null;
 let hasLoggedOut = false;
 
 const service = axios.create({
-  baseURL: "https://localhost:7047/api",
+  baseURL: "https://fyp-production-a7ce.up.railway.app/api",
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",

@@ -15,7 +15,7 @@ export async function logout() {
 
     if (!window.location.pathname.includes("/login")) {
       setTimeout(() => {
-        window.location.href = "/login";
+        window.location.href = "#/login";
       }, 3000);
     }
   }
