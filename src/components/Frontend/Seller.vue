@@ -35,7 +35,7 @@ const header = ref({
 const checkQRCode = async () => {
   const response = await userStore.getUserProfile();
   if (
-    response.paymentQRCode === "https://localhost:7047/" ||
+    response.paymentQRCode === "https://fyp-production-a7ce.up.railway.app/" ||
     response.paymentQRCode === ""
   ) {
     toast.info("Please upload the QR Code before add product!");
@@ -283,7 +283,7 @@ onMounted(async () => {
             ref="uploadRef"
             :auto-upload="false"
             :show-file-list="true"
-            action="https://localhost:7047/api/common/upload"
+            action="https://fyp-production-a7ce.up.railway.app/api/common/upload"
             :headers="header"
             name="ProductImage"
             style="justify-content: center"

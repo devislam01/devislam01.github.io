@@ -68,7 +68,8 @@ const fetchUserDetail = async () => {
   form.value.address = response.address;
   form.value.college = response.residentialCollege;
   if (
-    response.paymentQRCode !== "https://localhost:7047/" &&
+    response.paymentQRCode !==
+      "https://fyp-production-a7ce.up.railway.app/api" &&
     response.paymentQRCode !== ""
   ) {
     form.value.paymentQRCode = [
@@ -240,7 +241,7 @@ onMounted(async () => {
           ref="uploadRef"
           :auto-upload="false"
           :show-file-list="true"
-          action="https://localhost:7047/api/common/upload"
+          action="https://fyp-production-a7ce.up.railway.app/api/common/upload"
           :headers="header"
           name="PaymentQRCode"
           style="justify-content: center"
