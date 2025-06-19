@@ -1,18 +1,23 @@
 <script setup>
 import { ShoppingCart, User, Warning } from "@element-plus/icons-vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { logout } from "@/utils/logout.js";
 import { useProductStore } from "@/stores/productStore";
 import { useUserStore } from "@/stores/userStore.js";
 import { useToast } from "vue-toastification";
+import { useAuthStore } from "@/stores/authStore.js";
+import router from "@/router/index.js";
 
 const productStore = useProductStore();
 const userStore = useUserStore();
+const authStore = useAuthStore();
 const toast = useToast();
 
 const input = ref("");
 const resetPasswordDialogVisible = ref(false);
 const resetPassword = ref("");
+
+const isLogin = computed(() => authStore.accessToken !== null);
 
 const search = async () => {
   const payload = {
@@ -107,7 +112,14 @@ const submitResetPassword = async () => {
                   Reset Password
                 </el-dropdown-item>
                 <el-dropdown-item
+                  v-if="isLogin"
                   @click="logout"
+                  style="color: #0f5841; font-weight: 500"
+                  >Logout</el-dropdown-item
+                >
+                <el-dropdown-item
+                  v-else
+                  @click="router.push({ path: '/login' })"
                   style="color: #0f5841; font-weight: 500"
                   >Logout</el-dropdown-item
                 >
