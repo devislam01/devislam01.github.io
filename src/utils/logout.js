@@ -6,17 +6,23 @@ export async function logout() {
   const toast = useToast();
   const authStore = useAuthStore();
 
-  const resp = await authStore.logoutUser();
-  if (resp.code === 200) {
-    toast.success(resp.message);
+  if (authStore.accessToken !== null) {
+    const resp = await authStore.logoutUser();
+    if (resp.code === 200) {
+      toast.success(resp.message);
 
-    const { stopConnection } = useSignalR();
-    await stopConnection();
+      const { stopConnection } = useSignalR();
+      await stopConnection();
 
-    if (!window.location.pathname.includes("/login")) {
-      setTimeout(() => {
-        window.location.href = "#/login";
-      }, 3000);
+      if (!window.location.pathname.includes("/login")) {
+        setTimeout(() => {
+          window.location.href = "#/login";
+        }, 1500);
+      }
     }
+  } else {
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1500);
   }
 }

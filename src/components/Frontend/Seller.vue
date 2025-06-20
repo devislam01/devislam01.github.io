@@ -106,7 +106,6 @@ const fetchSpecificProductList = async () => {
 };
 
 onMounted(async () => {
-  await checkQRCode();
   await fetchSpecificProductList();
 });
 </script>
@@ -249,7 +248,7 @@ onMounted(async () => {
         </el-row>
       </el-col>
     </el-tab-pane>
-    <el-tab-pane label="Add Product">
+    <el-tab-pane label="Add Product" @click="checkQRCode">
       <el-form ref="formRef" :model="form">
         <el-col
           :span="24"
