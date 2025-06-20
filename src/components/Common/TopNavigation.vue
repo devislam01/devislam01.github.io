@@ -121,7 +121,7 @@ const submitResetPassword = async () => {
                   v-else
                   @click="router.push({ path: '/login' })"
                   style="color: #0f5841; font-weight: 500"
-                  >Logout</el-dropdown-item
+                  >Login</el-dropdown-item
                 >
               </el-dropdown-menu>
             </template>
