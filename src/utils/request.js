@@ -10,7 +10,7 @@ let refreshTokenPromise = null;
 let hasLoggedOut = false;
 
 const service = axios.create({
-  baseURL: "https://localhost:7047/api",
+  baseURL: import.meta.env.VITE_API_BASE,
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",
@@ -57,25 +57,39 @@ service.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    const authStore = useAuthStore();
     const { status } = response;
     const isRefreshingTokenRequest = config.url.includes("/auth/refresh");
+
+    if (status === 401 && !authStore.accessToken) {
+      if (!hasLoggedOut) {
+        hasLoggedOut = true;
+        await logout();
+      }
+      toast.error("Unauthorized. Please login again.");
+      return Promise.reject(error);
+    }
 
     if (status === 401 && !isRefreshing && !isRefreshingTokenRequest) {
       isRefreshing = true;
 
       try {
-        const resp = await useAuthStore().getRefreshToken();
+        const resp = await authStore.getRefreshToken();
 
         if (resp.code === 200) {
           const newToken = resp.data.accessToken;
           refreshTokenPromise = Promise.resolve(newToken);
+        } else {
+          throw new Error(resp.message || "Failed to refresh token");
         }
       } catch (e) {
         if (!hasLoggedOut) {
           hasLoggedOut = true;
           await logout();
         }
-        toast.error(e.response.data.Message);
+
+        const message = e?.response?.data?.Message || "Token refresh failed";
+        toast.error(message);
         return Promise.reject(e);
       } finally {
         isRefreshing = false;
@@ -85,22 +99,18 @@ service.interceptors.response.use(
         const newToken = await refreshTokenPromise;
         if (newToken) {
           config.headers.Authorization = `Bearer ${newToken}`;
-          return service(config);
+          return service(config); // retry original request
         }
       } catch (e) {
-        toast.error(e.response.data.Message);
+        const message =
+          e?.response?.data?.Message || "Retry after refresh failed";
+        toast.error(message);
         return Promise.reject(e);
       }
     }
 
-    if (status === 401 && isRefreshingTokenRequest) {
-      if (!hasLoggedOut) {
-        hasLoggedOut = true;
-        await logout();
-      }
-    }
-
     toast.error(error.response.data.Message);
+
     return Promise.reject(error);
   }
 );

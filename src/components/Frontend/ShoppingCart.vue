@@ -29,6 +29,7 @@ const updateCart = async (productID, quantity) => {
   }
 
   await productStore.updateCart(cartItemUpdateRequest.value);
+  await productStore.shoppingCart();
 };
 
 const deleteFromCart = async (productID) => {

@@ -37,13 +37,22 @@ const pagination = ref({
 });
 
 const token = authStore.accessToken || "";
-const userID = JSON.parse(atob(token.split(".")[1]))[claimTypes.userId];
+const userID =
+  token !== "" ? JSON.parse(atob(token.split(".")[1]))[claimTypes.userId] : "";
 
 const addtoCart = async (isBuyNow = false) => {
   if (userID === sellerInfo.value.sellerID) {
     toast.error("You cannot purchase your own product!");
-    return;
+    return false;
   }
+  if (authStore.accessToken === null) {
+    toast.info("Please login for further action");
+    setTimeout(async () => {
+      await router.push({ path: "/login" });
+    }, 2000);
+    return false;
+  }
+
   const payload = {
     ProductID: info.value.productID,
     Quantity: num.value,
@@ -52,15 +61,16 @@ const addtoCart = async (isBuyNow = false) => {
   if (response.code === 200 && !isBuyNow) {
     toast.success("Item has been added to your shopping cart.");
   }
+  await productStore.shoppingCart();
+
+  return response.code === 200;
 };
 
 const checkout = async () => {
-  if (userID === sellerInfo.value.sellerID) {
-    toast.error("You cannot purchase your own product!");
-    return;
+  const isValid = await addtoCart(true);
+  if (isValid) {
+    await router.push("/shoppingCart");
   }
-  await addtoCart(true);
-  await router.push("/shoppingCart");
 };
 
 watchEffect(() => {

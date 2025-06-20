@@ -15,8 +15,11 @@ export const useProductStore = defineStore("products", {
       pageSize: 10,
       totalRecord: 0,
     },
+    cartCount: 0,
   }),
-  persist: true,
+  persist: {
+    pick: ["filters", "pagination"],
+  },
   actions: {
     async getProductList(payload = {}) {
       if (typeof payload.search !== "undefined") {
@@ -67,7 +70,8 @@ export const useProductStore = defineStore("products", {
     },
     async shoppingCart() {
       const response = await axios.get(`cart/shoppingCart`);
-      this.data = response.data;
+
+      this.cartCount = response.data.length;
       return response.data;
     },
     async addtoCart(payload) {

@@ -1,23 +1,26 @@
 <script setup>
 import { ShoppingCart, User, Warning } from "@element-plus/icons-vue";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { logout } from "@/utils/logout.js";
 import { useProductStore } from "@/stores/productStore";
 import { useUserStore } from "@/stores/userStore.js";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore.js";
-import router from "@/router/index.js";
+import { useRouter } from "vue-router";
 
 const productStore = useProductStore();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const toast = useToast();
+const router = useRouter();
+const route = router.currentRoute.value;
 
 const input = ref("");
 const resetPasswordDialogVisible = ref(false);
 const resetPassword = ref("");
 
 const isLogin = computed(() => authStore.accessToken !== null);
+const cartCount = computed(() => productStore.cartCount);
 
 const search = async () => {
   const payload = {
@@ -47,13 +50,24 @@ const submitResetPassword = async () => {
     toast.success(resp.message);
   }
 };
+
+onMounted(async () => {
+  if (authStore.accessToken !== null) {
+    await productStore.shoppingCart();
+  }
+});
 </script>
 
 <template>
-  <el-menu class="el-menu-demo" mode="horizontal" :ellipsis="false">
+  <el-menu
+    mode="horizontal"
+    :ellipsis="false"
+    router
+    :default-active="route.path"
+  >
     <el-row style="width: 100%">
       <el-col :span="9">
-        <el-menu-item index="0">
+        <el-menu-item>
           <img
             style="width: 275px; margin-top: 10px"
             src="/src/assets/PrelovedNoBack.png"
@@ -61,18 +75,14 @@ const submitResetPassword = async () => {
           />
         </el-menu-item>
       </el-col>
-      <el-col :span="15" style="display: flex; justify-content: right">
-        <el-menu-item index="1">
-          <RouterLink to="/"
-            ><el-button type="success" round color="#0F5841"
-              >Home</el-button
-            ></RouterLink
-          >
+      <el-col :span="12" style="display: flex; justify-content: right">
+        <el-menu-item index="/">
+          <el-text tag="b">Home</el-text>
         </el-menu-item>
-        <el-menu-item index="2">
-          <RouterLink to="/seller"><el-text tag="b">Sell</el-text></RouterLink>
+        <el-menu-item index="/seller">
+          <el-text tag="b">Sell</el-text>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item>
           <el-input
             v-model="input"
             placeholder="Search for Products..."
@@ -85,12 +95,17 @@ const submitResetPassword = async () => {
             </template>
           </el-input>
         </el-menu-item>
-        <el-menu-item index="4">
-          <RouterLink to="/shoppingCart" style="color: #0f5841"
-            ><el-icon><ShoppingCart /></el-icon
-          ></RouterLink>
+        <el-menu-item index="/shoppingCart">
+          <el-badge
+            :value="cartCount"
+            class="item"
+            :show-zero="false"
+            :offset="[0, 17]"
+          >
+            <el-icon><ShoppingCart /></el-icon>
+          </el-badge>
         </el-menu-item>
-        <el-menu-item index="5">
+        <el-menu-item index="/Profile">
           <el-dropdown>
             <el-icon><User /></el-icon>
             <template #dropdown>
@@ -128,6 +143,7 @@ const submitResetPassword = async () => {
           </el-dropdown>
         </el-menu-item>
       </el-col>
+      <el-col :span="3" />
     </el-row>
   </el-menu>
 
@@ -170,5 +186,9 @@ const submitResetPassword = async () => {
 <style>
 .el-menu-item * {
   vertical-align: initial;
+}
+
+.el-menu-item.is-active {
+  border-bottom: 2px solid #578a7a;
 }
 </style>
