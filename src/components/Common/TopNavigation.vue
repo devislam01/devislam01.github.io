@@ -64,6 +64,7 @@ onMounted(async () => {
     :ellipsis="false"
     router
     :default-active="route.path"
+    style="position: sticky; top: 0; z-index: 2"
   >
     <el-row style="width: 100%">
       <el-col :span="9">
