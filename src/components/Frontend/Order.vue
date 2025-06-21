@@ -283,15 +283,18 @@ watchEffect(async () => {
         v-for="(order, index) in buyerOrderList"
         :key="index"
         style="
-          border-style: solid;
-          border-color: #0f5841;
-          border-radius: 15px;
+          border: 1.5px solid #e0e0e0;
+          border-radius: 20px;
+          padding: 10px;
+          background-color: #ffffff;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          transition: box-shadow 0.3s ease, transform 0.2s ease;
           margin: 0 20px 20px 20px;
         "
       >
-        <el-col :span="24" style="padding: 20px">
+        <el-col :span="24" style="padding: 15px 20px">
           <el-row style="width: 100%; padding-bottom: 10px">
-            <el-col :span="12" style="text-align: left">
+            <el-col :span="12" style="text-align: left; justify-content: center;">
               <div style="display: flex; align-items: center; gap: 10px">
                 <div style="color: #0f5841; font-size: 1.1rem">
                   Order ID: {{ order.orderID }}
@@ -321,13 +324,12 @@ watchEffect(async () => {
             :key="indexSeller"
             style="width: 100%"
           >
-            <el-divider />
+            <el-divider style="margin: 0 0 10px 0; border-top-width: 3px;"/>
             <div
               style="
                 display: block;
                 width: 100%;
                 text-align: left;
-                padding-top: 5px;
                 padding-bottom: 5px;
                 color: black;
               "
@@ -337,24 +339,8 @@ watchEffect(async () => {
             <el-row
               v-for="(item, indexItem) in seller.items"
               :key="indexItem"
-              style="width: 100%"
+              style="width: 100%; margin-bottom: 10px;"
             >
-              <el-divider />
-              <el-col
-                :span="24"
-                style="display: flex; justify-content: left; margin-top: 5px"
-              >
-                <div style="color: #000000">
-                  Status:
-                  <el-tag
-                    :type="getTagColor[item.status]"
-                    size="large"
-                    effect="dark"
-                    round
-                    >{{ item.status }}</el-tag
-                  >
-                </div>
-              </el-col>
               <el-col
                 :span="24"
                 style="display: flex; justify-content: left; margin-top: 5px"
@@ -400,9 +386,38 @@ watchEffect(async () => {
                 <div
                   style="color: #0f5841; font-size: 1.2rem; text-align: right"
                 >
-                  RM {{ (item.quantity * item.price).toFixed(2) }}
+                  <div
+                    style="
+                      position: absolute;
+                      top: 0;
+                      right: 0;
+                      text-align: right;
+                    "
+                  >
+                    <span style="color: #000000; margin-right: 5px"
+                      >Status:</span
+                    >
+                    <el-tag
+                      :type="getTagColor[item.status]"
+                      size="large"
+                      effect="dark"
+                      round
+                    >
+                      {{ item.status }}
+                    </el-tag>
+                  </div>
+                  <div
+                    style="
+                      color: #0f5841;
+                      font-size: 1.2rem;
+                      text-align: right;
+                    "
+                  >
+                    RM {{ (item.quantity * item.price).toFixed(2) }}
+                  </div>
                 </div>
               </el-col>
+              <div style="display: flex; justify-content: flex-end; width: 100%;">
               <el-button
                 v-if="
                   (order.status === 'Processing' ||
@@ -435,7 +450,6 @@ watchEffect(async () => {
                   border: none;
                   width: 250px;
                   margin-top: 20px;
-                  margin-right: 10px;
                 "
                 size="large"
                 @click="openReceiptDialog(seller.receipt)"
@@ -451,7 +465,6 @@ watchEffect(async () => {
                   border: none;
                   width: 250px;
                   margin-top: 20px;
-                  margin-right: 10px;
                 "
                 size="large"
                 @click="openDialogRateProduct(seller, item)"
@@ -467,15 +480,15 @@ watchEffect(async () => {
                   border: none;
                   width: 250px;
                   margin-top: 20px;
-                  margin-right: 10px;
                 "
                 size="large"
                 @click="redirectToWhatsApp(seller.sellerPhoneNo)"
                 >Contact Seller</el-button
               >
+              </div>
             </el-row>
           </el-row>
-          <el-divider />
+          <el-divider style="margin: 0 0 10px 0; border-top-width: 3px;"/>
           <el-row style="width: 100%; justify-content: right">
             <div style="color: #0f5841; font-size: 1.2rem; margin-top: 10px">
               Order Total: RM {{ order.totalAmt }}
@@ -547,9 +560,12 @@ watchEffect(async () => {
         v-for="(order, index) in sellerOrderList"
         :key="index"
         style="
-          border-style: solid;
-          border-color: #0f5841;
-          border-radius: 15px;
+          border: 1.5px solid #e0e0e0;
+          border-radius: 20px;
+          padding: 10px;
+          background-color: #ffffff;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          transition: box-shadow 0.3s ease, transform 0.2s ease;
           margin: 0 20px 20px 20px;
         "
       >
@@ -573,27 +589,12 @@ watchEffect(async () => {
               </div>
             </el-col>
           </el-row>
-          <el-divider />
+           <el-divider style="margin: 0 0 10px 0; border-top-width: 3px;"/>
           <el-row
             v-for="(item, indexItem) in order.orderItems"
             :key="indexItem"
             style="width: 100%"
           >
-            <el-col
-              :span="24"
-              style="display: flex; justify-content: left; margin-top: 5px"
-            >
-              <div style="color: #000000">
-                Status:
-                <el-tag
-                  :type="getTagColor[item.status]"
-                  size="large"
-                  effect="dark"
-                  round
-                  >{{ item.status }}</el-tag
-                >
-              </div>
-            </el-col>
             <el-col
               :span="24"
               style="display: flex; justify-content: left; margin-top: 5px"
@@ -605,7 +606,7 @@ watchEffect(async () => {
               </div>
             </el-col>
             <el-col :span="12">
-              <div style="display: flex; align-items: center; gap: 10px">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                 <div
                   style="
                     max-width: 9vw;
@@ -636,10 +637,47 @@ watchEffect(async () => {
               </div>
             </el-col>
             <el-col :span="12" style="align-content: center">
-              <div style="color: #0f5841; font-size: 1.2rem; text-align: right">
-                RM {{ (item.quantity * item.price).toFixed(2) }}
-              </div>
-            </el-col>
+              <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    height: 100%;
+                    position: relative;
+                  "
+                >
+                  <div
+                    style="
+                      position: absolute;
+                      top: 0;
+                      right: 0;
+                      text-align: right;
+                    "
+                  >
+                    <span style="color: #000000; margin-right: 5px"
+                      >Status:</span
+                    >
+                    <el-tag
+                      :type="getTagColor[item.status]"
+                      size="large"
+                      effect="dark"
+                      round
+                    >
+                      {{ item.status }}
+                    </el-tag>
+                  </div>
+                  <div
+                    style="
+                      color: #0f5841;
+                      font-size: 1.2rem;
+                      text-align: right;
+                    "
+                  >
+                    RM {{ (item.quantity * item.price).toFixed(2) }}
+                  </div>
+                </div>
+              </el-col>
+              <div style="display: flex; justify-content: flex-end; width: 100%;">
             <el-button
               v-if="item.status === 'RequestCancel'"
               round
@@ -671,7 +709,8 @@ watchEffect(async () => {
             >
               Reject Request
             </el-button>
-            <el-divider />
+            </div>
+            <el-divider style="margin: 10px 0 10px 0; border-top-width: 3px;"/>
           </el-row>
           <el-row style="width: 100%; justify-content: right">
             <div style="color: #0f5841; font-size: 1.2rem; margin-top: 10px">
@@ -724,7 +763,6 @@ watchEffect(async () => {
               border: none;
               width: 250px;
               margin-top: 20px;
-              margin-right: 20px;
             "
             size="large"
             @click="markOrderComplete(order.orderID)"
