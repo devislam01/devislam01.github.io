@@ -42,9 +42,9 @@ const rules = ref({
   password: [
     { required: true, message: "Please input Password", trigger: "blur" },
     {
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/,
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/,
       message:
-        "Password must include uppercase, lowercase, and special character",
+        "Password must be at least 8 characters and include uppercase, lowercase, and special character",
       trigger: "blur",
     },
   ],
@@ -55,9 +55,9 @@ const rules = ref({
       trigger: "blur",
     },
     {
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/,
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/,
       message:
-        "Password must include uppercase, lowercase, and special character",
+        "Password must be at least 8 characters and include uppercase, lowercase, and special character",
       trigger: "blur",
     },
     {

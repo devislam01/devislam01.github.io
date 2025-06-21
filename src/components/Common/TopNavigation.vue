@@ -31,10 +31,10 @@ const search = async () => {
 };
 
 const submitResetPassword = async () => {
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
   if (!passwordRegex.test(resetPassword.value)) {
     toast.info(
-      "Password must be include uppercase, lowercase, number, and special character."
+      "Password must be at least 8 characters and include uppercase, lowercase, and special character"
     );
     return;
   }
