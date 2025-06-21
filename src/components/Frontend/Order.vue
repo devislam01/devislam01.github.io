@@ -294,7 +294,10 @@ watchEffect(async () => {
       >
         <el-col :span="24" style="padding: 15px 20px">
           <el-row style="width: 100%; padding-bottom: 10px">
-            <el-col :span="12" style="text-align: left; justify-content: center;">
+            <el-col
+              :span="12"
+              style="text-align: left; justify-content: center"
+            >
               <div style="display: flex; align-items: center; gap: 10px">
                 <div style="color: #0f5841; font-size: 1.1rem">
                   Order ID: {{ order.orderID }}
@@ -324,7 +327,7 @@ watchEffect(async () => {
             :key="indexSeller"
             style="width: 100%"
           >
-            <el-divider style="margin: 0 0 10px 0; border-top-width: 3px;"/>
+            <el-divider style="margin: 0 0 10px 0; border-top-width: 3px" />
             <div
               style="
                 display: block;
@@ -339,7 +342,7 @@ watchEffect(async () => {
             <el-row
               v-for="(item, indexItem) in seller.items"
               :key="indexItem"
-              style="width: 100%; margin-bottom: 10px;"
+              style="width: 100%; margin-bottom: 10px"
             >
               <el-col
                 :span="24"
@@ -407,88 +410,104 @@ watchEffect(async () => {
                     </el-tag>
                   </div>
                   <div
-                    style="
-                      color: #0f5841;
-                      font-size: 1.2rem;
-                      text-align: right;
-                    "
+                    style="color: #0f5841; font-size: 1.2rem; text-align: right"
                   >
                     RM {{ (item.quantity * item.price).toFixed(2) }}
                   </div>
                 </div>
               </el-col>
-              <div style="display: flex; justify-content: flex-end; width: 100%;">
-              <el-button
-                v-if="
-                  (order.status === 'Processing' ||
-                    order.status === 'PartiallyRequestCancel') &&
-                  item.status !== 'RequestCancel' &&
-                  item.status !== 'Cancelled' &&
-                  item.status !== 'Completed' &&
-                  (order.orderItems.length > 1 || seller.items.length > 1)
-                "
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                "
-                size="large"
-                @click="openDialogCancel(item.orderItemID)"
-                >Request To Cancel</el-button
+              <div
+                style="display: flex; justify-content: flex-end; width: 100%"
               >
-              <el-button
-                v-if="order.status !== 'Pending' && order.paymentMethodID === 2"
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                "
-                size="large"
-                @click="openReceiptDialog(seller.receipt)"
-                >Check Payment Receipt</el-button
-              >
-              <el-button
-                v-if="item.status === 'Completed' && !item.hasRating"
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                "
-                size="large"
-                @click="openDialogRateProduct(seller, item)"
-                >Rate Product</el-button
-              >
-              <el-button
-                v-if="order.orderItems.length > 1"
-                round
-                color="#0F5841"
-                style="
-                  float: right;
-                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                  border: none;
-                  width: 250px;
-                  margin-top: 20px;
-                "
-                size="large"
-                @click="redirectToWhatsApp(seller.sellerPhoneNo)"
-                >Contact Seller</el-button
-              >
+                <el-button
+                  v-if="
+                    (order.status === 'Processing' ||
+                      order.status === 'PartiallyRequestCancel') &&
+                    item.status !== 'RequestCancel' &&
+                    item.status !== 'Cancelled' &&
+                    item.status !== 'Completed' &&
+                    (order.orderItems.length > 1 || seller.items.length > 1)
+                  "
+                  round
+                  color="#0F5841"
+                  style="
+                    float: right;
+                    background-image: linear-gradient(
+                      to right,
+                      #0f5841,
+                      #87ab9f
+                    );
+                    border: none;
+                    width: 250px;
+                    margin-top: 20px;
+                  "
+                  size="large"
+                  @click="openDialogCancel(item.orderItemID)"
+                  >Request To Cancel</el-button
+                >
+                <el-button
+                  v-if="
+                    order.status !== 'Pending' && order.paymentMethodID === 2
+                  "
+                  round
+                  color="#0F5841"
+                  style="
+                    float: right;
+                    background-image: linear-gradient(
+                      to right,
+                      #0f5841,
+                      #87ab9f
+                    );
+                    border: none;
+                    width: 250px;
+                    margin-top: 20px;
+                  "
+                  size="large"
+                  @click="openReceiptDialog(seller.receipt)"
+                  >Check Payment Receipt</el-button
+                >
+                <el-button
+                  v-if="item.status === 'Completed' && !item.hasRating"
+                  round
+                  color="#0F5841"
+                  style="
+                    float: right;
+                    background-image: linear-gradient(
+                      to right,
+                      #0f5841,
+                      #87ab9f
+                    );
+                    border: none;
+                    width: 250px;
+                    margin-top: 20px;
+                  "
+                  size="large"
+                  @click="openDialogRateProduct(seller, item)"
+                  >Rate Product</el-button
+                >
+                <el-button
+                  v-if="order.orderItems.length > 1"
+                  round
+                  color="#0F5841"
+                  style="
+                    float: right;
+                    background-image: linear-gradient(
+                      to right,
+                      #0f5841,
+                      #87ab9f
+                    );
+                    border: none;
+                    width: 250px;
+                    margin-top: 20px;
+                  "
+                  size="large"
+                  @click="redirectToWhatsApp(seller.sellerPhoneNo)"
+                  >Contact Seller</el-button
+                >
               </div>
             </el-row>
           </el-row>
-          <el-divider style="margin: 0 0 10px 0; border-top-width: 3px;"/>
+          <el-divider style="margin: 0 0 10px 0; border-top-width: 3px" />
           <el-row style="width: 100%; justify-content: right">
             <div style="color: #0f5841; font-size: 1.2rem; margin-top: 10px">
               Order Total: RM {{ order.totalAmt }}
@@ -585,11 +604,17 @@ watchEffect(async () => {
                   direction="vertical"
                   style="border-left-width: 2px; border-color: black"
                 />
-                <div style="color: black">Bought By: {{ order.buyerName }}</div>
+                <div style="color: black; display: flex">
+                  <el-text>Bought By: {{ order.buyerName }}</el-text>
+                  <el-divider direction="vertical" />
+                  <el-text>{{ order.buyerAddress }}</el-text>
+                  <el-divider direction="vertical" />
+                  <el-text>{{ order.residentialCollege }}</el-text>
+                </div>
               </div>
             </el-col>
           </el-row>
-           <el-divider style="margin: 0 0 10px 0; border-top-width: 3px;"/>
+          <el-divider style="margin: 0 0 10px 0; border-top-width: 3px" />
           <el-row
             v-for="(item, indexItem) in order.orderItems"
             :key="indexItem"
@@ -606,7 +631,14 @@ watchEffect(async () => {
               </div>
             </el-col>
             <el-col :span="12">
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  margin-bottom: 5px;
+                "
+              >
                 <div
                   style="
                     max-width: 9vw;
@@ -638,79 +670,73 @@ watchEffect(async () => {
             </el-col>
             <el-col :span="12" style="align-content: center">
               <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  height: 100%;
+                  position: relative;
+                "
+              >
+                <div
                   style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    height: 100%;
-                    position: relative;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    text-align: right;
                   "
                 >
-                  <div
-                    style="
-                      position: absolute;
-                      top: 0;
-                      right: 0;
-                      text-align: right;
-                    "
+                  <span style="color: #000000; margin-right: 5px">Status:</span>
+                  <el-tag
+                    :type="getTagColor[item.status]"
+                    size="large"
+                    effect="dark"
+                    round
                   >
-                    <span style="color: #000000; margin-right: 5px"
-                      >Status:</span
-                    >
-                    <el-tag
-                      :type="getTagColor[item.status]"
-                      size="large"
-                      effect="dark"
-                      round
-                    >
-                      {{ item.status }}
-                    </el-tag>
-                  </div>
-                  <div
-                    style="
-                      color: #0f5841;
-                      font-size: 1.2rem;
-                      text-align: right;
-                    "
-                  >
-                    RM {{ (item.quantity * item.price).toFixed(2) }}
-                  </div>
+                    {{ item.status }}
+                  </el-tag>
                 </div>
-              </el-col>
-              <div style="display: flex; justify-content: flex-end; width: 100%;">
-            <el-button
-              v-if="item.status === 'RequestCancel'"
-              round
-              color="#0F5841"
-              style="
-                float: right;
-                background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                border: none;
-                width: 250px;
-                margin-top: 20px;
-              "
-              size="large"
-              @click="openDialogApproveCancel(item.orderItemID)"
-              >Approve Request</el-button
-            >
-            <el-button
-              v-if="item.status === 'RequestCancel'"
-              round
-              color="#0F5841"
-              style="
-                float: right;
-                background-image: linear-gradient(to right, #0f5841, #87ab9f);
-                border: none;
-                width: 250px;
-                margin-top: 20px;
-              "
-              size="large"
-              @click="openDialogRejectCancel(item.orderItemID)"
-            >
-              Reject Request
-            </el-button>
+                <div
+                  style="color: #0f5841; font-size: 1.2rem; text-align: right"
+                >
+                  RM {{ (item.quantity * item.price).toFixed(2) }}
+                </div>
+              </div>
+            </el-col>
+            <div style="display: flex; justify-content: flex-end; width: 100%">
+              <el-button
+                v-if="item.status === 'RequestCancel'"
+                round
+                color="#0F5841"
+                style="
+                  float: right;
+                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                  border: none;
+                  width: 250px;
+                  margin-top: 20px;
+                "
+                size="large"
+                @click="openDialogApproveCancel(item.orderItemID)"
+                >Approve Request</el-button
+              >
+              <el-button
+                v-if="item.status === 'RequestCancel'"
+                round
+                color="#0F5841"
+                style="
+                  float: right;
+                  background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                  border: none;
+                  width: 250px;
+                  margin-top: 20px;
+                "
+                size="large"
+                @click="openDialogRejectCancel(item.orderItemID)"
+              >
+                Reject Request
+              </el-button>
             </div>
-            <el-divider style="margin: 10px 0 10px 0; border-top-width: 3px;"/>
+            <el-divider style="margin: 10px 0 10px 0; border-top-width: 3px" />
           </el-row>
           <el-row style="width: 100%; justify-content: right">
             <div style="color: #0f5841; font-size: 1.2rem; margin-top: 10px">
