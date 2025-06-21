@@ -202,7 +202,7 @@ onMounted(async () => {
       >
         <el-col :span="9">
           <div style="display: flex; align-items: center; gap: 10px">
-            <img style="width: 150px" :src="item.productImage" alt="" />
+            <img  style="width: 150px; height: 150px; object-fit: contain" :src="item.productImage" alt="" />
             <div style="color: #0f5841; font-size: 1.2rem">
               {{ item.productName }}
             </div>
