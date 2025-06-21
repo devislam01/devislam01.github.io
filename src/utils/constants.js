@@ -14,23 +14,43 @@ export const HttpCode = {
 export const category = [
   {
     value: 1,
-    label: "Kitchenware",
+    label: "Electronics & Gadgets",
   },
   {
     value: 2,
-    label: "Electronics",
+    label: "Kitchen Appliances & Utensils",
   },
   {
     value: 3,
-    label: "Furniture",
+    label: "Furniture & Room Essentials",
   },
   {
     value: 4,
-    label: "Books",
+    label: "Academic Books & Stationery",
   },
   {
     value: 5,
-    label: "Food",
+    label: "Clothing & Accessories",
+  },
+  {
+    value: 6,
+    label: "Sports & Fitness Equipment",
+  },
+  {
+    value: 7,
+    label: "Food & Beverages (Non-perishable)",
+  },
+  {
+    value: 8,
+    label: "Personal Care & Hygiene",
+  },
+  {
+    value: 9,
+    label: "Bicycles & Transport Accessories",
+  },
+  {
+    value: 10,
+    label: "Decor & Miscellaneous",
   },
 ];
 
