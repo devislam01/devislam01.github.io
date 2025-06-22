@@ -313,6 +313,11 @@ onMounted(async () => {
                 </span>
               </div>
             </template>
+            <template #tip>
+              <div class="el-upload__tip text-red">
+                limit 1 file, new file will cover the old file
+              </div>
+            </template>
           </el-upload>
           <el-dialog
             v-model="dialogVisible"
