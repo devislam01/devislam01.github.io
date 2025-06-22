@@ -223,8 +223,8 @@ const registerUser = async () => {
             <el-form-item label="Phone Number" prop="phoneNumber">
               <el-input
                 v-model="form.phoneNumber"
-                type="phoneNumber"
-                placeholder="Please enter your Phone Number"
+                type="text"
+                placeholder="Please enter your Phone Number without dash(-)"
                 style="height: 40px"
               ></el-input>
             </el-form-item>

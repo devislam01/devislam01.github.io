@@ -164,7 +164,7 @@ onMounted(async () => {
         </div>
         <el-input
           v-model="form.phoneNumber"
-          placeholder="Please enter your Phone Number"
+          placeholder="Please enter your Phone Number without dash(-)"
           style="height: 40px"
         ></el-input>
         <div style="text-align: left">

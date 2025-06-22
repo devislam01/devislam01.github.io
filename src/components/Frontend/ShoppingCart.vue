@@ -134,6 +134,7 @@ const getTotal = () => {
         <el-col :span="1"> </el-col>
       </el-row>
       <el-row
+        v-if="cartItems.length > 0"
         v-for="(item, index) in cartItems"
         :key="index"
         :gutter="20"
@@ -215,6 +216,9 @@ const getTotal = () => {
             <el-icon><Close /></el-icon>
           </button>
         </el-col>
+      </el-row>
+      <el-row :gutter="20" v-else>
+        <el-empty description="Shop And Get Your Favourites Now!" />
       </el-row>
     </el-col>
     <el-col
