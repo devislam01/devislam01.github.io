@@ -196,7 +196,7 @@ onMounted(async () => {
         <el-pagination
           v-model:current-page="pagination.pageNumber"
           v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 50, 100]"
+          :page-sizes="[9, 50, 100]"
           :size="pagination.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="pagination.totalRecord"
