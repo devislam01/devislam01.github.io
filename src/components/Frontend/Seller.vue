@@ -161,6 +161,7 @@ onMounted(async () => {
           <el-col :span="6"> </el-col>
         </el-row>
         <el-row
+          v-if="productList.length > 0"
           v-for="item in productList"
           :key="item.productID"
           style="
@@ -245,6 +246,9 @@ onMounted(async () => {
               >Delete</el-button
             >
           </el-col>
+        </el-row>
+        <el-row v-else>
+          <el-empty description="Nothing to Sell Now!" />
         </el-row>
       </el-col>
     </el-tab-pane>

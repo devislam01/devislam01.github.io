@@ -12,7 +12,7 @@ export const useProductStore = defineStore("products", {
     },
     pagination: {
       pageNumber: 1,
-      pageSize: 10,
+      pageSize: 9,
       totalRecord: 0,
     },
     cartCount: 0,
