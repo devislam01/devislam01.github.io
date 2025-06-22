@@ -1,15 +1,15 @@
 import * as signalR from "@microsoft/signalr";
 import { ref } from "vue";
-import { useUserStore } from "@/stores/userStore";
 import { useSignalRStore } from "@/stores/signalrStore.js";
+import { useAuthStore } from "@/stores/authStore.js";
 
 const connection = ref(null);
 
 export function useSignalR() {
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
 
   const startConnection = async () => {
-    if (!userStore.token) return;
+    if (!authStore.accessToken) return;
 
     if (connection.value && connection.value.state !== "Disconnected") {
       return;
@@ -17,7 +17,7 @@ export function useSignalR() {
 
     connection.value = new signalR.HubConnectionBuilder()
       .withUrl(import.meta.env.VITE_BACKEND + "orderHub", {
-        accessTokenFactory: () => userStore.token,
+        accessTokenFactory: () => authStore.accessToken,
       })
       .withAutomaticReconnect()
       .build();
