@@ -247,7 +247,7 @@ onMounted(async () => {
             >
           </el-col>
         </el-row>
-        <el-row v-else>
+        <el-row v-else style="justify-content: center">
           <el-empty description="Nothing to Sell Now!" />
         </el-row>
       </el-col>
