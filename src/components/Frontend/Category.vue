@@ -156,7 +156,7 @@ onMounted(async () => {
         </div>
       </el-card>
     </el-col>
-    <el-col :span="19" style="">
+    <el-col :span="19" style="" v-if="productList.length > 0">
       <el-row :gutter="20" style="">
         <el-col
           v-for="item in productList"
@@ -204,6 +204,9 @@ onMounted(async () => {
           @size-change="changeSize"
         />
       </div>
+    </el-col>
+    <el-col :span="19" v-else style="margin: auto">
+      <el-empty description="No Products Now" />
     </el-col>
   </el-row>
 </template>
