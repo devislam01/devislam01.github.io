@@ -39,9 +39,7 @@ const updateProduct = async () => {
   const payload = {
     productID: Number(route.query.id),
     ProductImageFile: isFile ? imageObj.raw : null,
-    ProductImageUrl: !isFile
-      ? imageObj.url.substring(imageObj.url.indexOf("ProductImages"))
-      : null,
+    ProductImageUrl: !isFile ? imageObj.url : null,
     productName: form.value.productName,
     productDescription: form.value.productDescription,
     categoryID: form.value.categoryID,
