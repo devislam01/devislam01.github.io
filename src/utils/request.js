@@ -7,7 +7,6 @@ import { useAuthStore } from "@/stores/authStore.js";
 const toast = useToast();
 let isRefreshing = false;
 let refreshTokenPromise = null;
-let hasLoggedOut = false;
 
 const service = axios.create({
   baseURL: import.meta.env.VITE_API_BASE,
@@ -62,10 +61,7 @@ service.interceptors.response.use(
     const isRefreshingTokenRequest = config.url.includes("/auth/refresh");
 
     if (status === 401 && !authStore.accessToken) {
-      if (!hasLoggedOut) {
-        hasLoggedOut = true;
-        await logout();
-      }
+      await logout();
       toast.error("Unauthorized. Please login again.");
       return Promise.reject(error);
     }
@@ -83,10 +79,7 @@ service.interceptors.response.use(
           throw new Error(resp.message || "Failed to refresh token");
         }
       } catch (e) {
-        if (!hasLoggedOut) {
-          hasLoggedOut = true;
-          await logout();
-        }
+        await logout();
 
         const message = e?.response?.data?.Message || "Token refresh failed";
         toast.error(message);
