@@ -217,7 +217,7 @@ const getTotal = () => {
           </button>
         </el-col>
       </el-row>
-      <el-row :gutter="20" v-else>
+      <el-row :gutter="20" v-else style="justify-content: center">
         <el-empty description="Shop And Get Your Favourites Now!" />
       </el-row>
     </el-col>
