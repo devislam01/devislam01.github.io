@@ -594,16 +594,12 @@ watchEffect(async () => {
               <div
                 style="
                   display: flex;
-                  align-items: center;
+                  flex-direction: column;
                   gap: 10px;
                   font-size: 1.1rem;
                 "
               >
                 <div style="color: #0f5841">Order ID: {{ order.orderID }}</div>
-                <el-divider
-                  direction="vertical"
-                  style="border-left-width: 2px; border-color: black"
-                />
                 <div style="color: black; display: flex">
                   <el-text>Bought By: {{ order.buyerName }}</el-text>
                   <el-divider direction="vertical" />
@@ -789,6 +785,7 @@ watchEffect(async () => {
               border: none;
               width: 250px;
               margin-top: 20px;
+              margin-right: 10px;
             "
             size="large"
             @click="markOrderComplete(order.orderID)"
