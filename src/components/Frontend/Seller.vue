@@ -280,6 +280,7 @@ onMounted(async () => {
             v-model:file-list="form.productImage"
             list-type="picture-card"
             ref="uploadRef"
+            :limit="1"
             :auto-upload="false"
             :show-file-list="true"
             action="https://fyp-production-a7ce.up.railway.app/api/common/upload"
