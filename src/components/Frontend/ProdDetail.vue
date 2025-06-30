@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watchEffect } from "vue";
-import { ShoppingCart } from "@element-plus/icons-vue";
+import { ChatRound, ShoppingCart } from "@element-plus/icons-vue";
 import { useProductStore } from "@/stores/productStore";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
@@ -27,6 +27,7 @@ const sellerInfo = ref({
   ratingMark: 0,
   completedOrders: 0,
   joinTime: "",
+  phoneNumber: "",
 });
 const num = ref(1);
 const feedbackList = ref([]);
@@ -100,6 +101,16 @@ const fetchFeedbackList = async () => {
   pagination.value = response.pagination;
 };
 
+const redirectToWhatsApp = (phoneNo) => {
+  const formattedNumber = phoneNo.startsWith("60")
+    ? phoneNo
+    : "60" + phoneNo.replace(/^0+/, "");
+
+  const whatsappUrl = `https://wa.me/${formattedNumber}`;
+
+  window.open(whatsappUrl, "_blank");
+};
+
 onMounted(async () => {
   await fetchProductDetail();
   await fetchFeedbackList();
@@ -107,178 +118,178 @@ onMounted(async () => {
 </script>
 
 <template>
-  <el-row style="margin-top: 1.5rem; padding: 30px" :gutter="20">
-    <el-col :span="12" style="padding: 20px; border: solid">
-      <el-carousel trigger="click" height="350px">
-        <img
-          :src="info.productImage"
-          alt="Product Image"
-          style="
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            display: block;
-            margin: auto;
-          "
-        />
-      </el-carousel>
-    </el-col>
-    <el-col :span="12">
-      <div style="text-align: left; margin-left: 20px">
-        <div
-          style="
-            font-weight: 400;
-            color: #0f5841;
-            font-size: 1.1rem;
-            margin-bottom: -5px;
-          "
-        >
-          Name
-        </div>
-        <div
-          style="
-            font-weight: 700;
-            color: #0f5841;
-            font-size: 2rem;
-            margin-bottom: 20px;
-          "
-        >
-          {{ info.productName }}
-        </div>
-        <div
-          style="
-            font-weight: 400;
-            color: #0f5841;
-            font-size: 1.1rem;
-            margin-bottom: -5px;
-          "
-        >
-          Price
-        </div>
-        <div
-          style="
-            font-weight: 700;
-            color: #0f5841;
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-          "
-        >
-          RM {{ info.productPrice }}
-        </div>
-        <div
-          style="
-            font-weight: 400;
-            color: #0f5841;
-            font-size: 1.1rem;
-            margin-bottom: -5px;
-          "
-        >
-          Condition
-        </div>
-        <div
-          style="
-            font-weight: 400;
-            color: #0f5841;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-          "
-        >
-          {{ info.productCondition }}
-        </div>
-        <div
-          style="
-            font-weight: 400;
-            color: #0f5841;
-            font-size: 1.1rem;
-            margin-bottom: -5px;
-          "
-        >
-          Category
-        </div>
-        <div
-          style="
-            font-weight: 400;
-            color: #0f5841;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-          "
-        >
-          {{ info.categoryName }}
-        </div>
-        <div
-          style="
-            font-weight: 400;
-            color: #0f5841;
-            font-size: 1.1rem;
-            margin-bottom: -5px;
-          "
-        >
-          Stock Quantity
-        </div>
-        <div
-          style="
-            font-weight: 400;
-            color: #0f5841;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-          "
-        >
-          {{ info.stockQty }}
-        </div>
-        <div style="font-weight: 400; color: #0f5841; font-size: 1.6rem">
-          Quantity:
-          <el-input-number
-            v-model="num"
-            :min="1"
-            :max="100"
-            @change="handleChange"
-            style="color: #0f5841"
+  <el-card style="width: 100%; margin-top: 20px">
+    <el-row>
+      <el-col :span="12" style="padding: 20px">
+        <el-carousel trigger="click" height="350px">
+          <img
+            :src="info.productImage"
+            alt="Product Image"
+            style="
+              max-width: 100%;
+              max-height: 100%;
+              object-fit: contain;
+              display: block;
+              margin: auto;
+            "
           />
+        </el-carousel>
+      </el-col>
+      <el-col :span="12">
+        <div style="text-align: left; margin-left: 20px">
+          <div
+            style="
+              font-weight: 400;
+              color: #0f5841;
+              font-size: 1.1rem;
+              margin-bottom: -5px;
+            "
+          >
+            Name
+          </div>
+          <div
+            style="
+              font-weight: 700;
+              color: #0f5841;
+              font-size: 2rem;
+              margin-bottom: 20px;
+            "
+          >
+            {{ info.productName }}
+          </div>
+          <div
+            style="
+              font-weight: 400;
+              color: #0f5841;
+              font-size: 1.1rem;
+              margin-bottom: -5px;
+            "
+          >
+            Price
+          </div>
+          <div
+            style="
+              font-weight: 700;
+              color: #0f5841;
+              font-size: 1.6rem;
+              margin-bottom: 20px;
+            "
+          >
+            RM {{ info.productPrice }}
+          </div>
+          <div
+            style="
+              font-weight: 400;
+              color: #0f5841;
+              font-size: 1.1rem;
+              margin-bottom: -5px;
+            "
+          >
+            Condition
+          </div>
+          <div
+            style="
+              font-weight: 400;
+              color: #0f5841;
+              font-size: 1.4rem;
+              margin-bottom: 20px;
+            "
+          >
+            {{ info.productCondition }}
+          </div>
+          <div
+            style="
+              font-weight: 400;
+              color: #0f5841;
+              font-size: 1.1rem;
+              margin-bottom: -5px;
+            "
+          >
+            Category
+          </div>
+          <div
+            style="
+              font-weight: 400;
+              color: #0f5841;
+              font-size: 1.4rem;
+              margin-bottom: 20px;
+            "
+          >
+            {{ info.categoryName }}
+          </div>
+          <div
+            style="
+              font-weight: 400;
+              color: #0f5841;
+              font-size: 1.1rem;
+              margin-bottom: -5px;
+            "
+          >
+            Stock Quantity
+          </div>
+          <div
+            style="
+              font-weight: 400;
+              color: #0f5841;
+              font-size: 1.4rem;
+              margin-bottom: 20px;
+            "
+          >
+            {{ info.stockQty }}
+          </div>
+          <div style="font-weight: 400; color: #0f5841; font-size: 1.6rem">
+            Quantity:
+            <el-input-number
+              v-model="num"
+              :min="1"
+              :max="100"
+              @change="handleChange"
+              style="color: #0f5841"
+            />
+          </div>
+          <el-button
+            round
+            color="#0F5841"
+            style="
+              background-image: linear-gradient(to right, #0f5841, #87ab9f);
+              border: none;
+              margin-top: 20px;
+              width: 150px;
+            "
+            size="large"
+            @click="checkout"
+            >Buy Now</el-button
+          >
+          <el-button
+            round
+            color="#0F5841"
+            @click="addtoCart()"
+            style="
+              background-image: linear-gradient(to right, #0f5841, #87ab9f);
+              border: none;
+              margin-top: 20px;
+              width: 150px;
+            "
+            size="large"
+            ><el-icon style="margin-right: 8px"><ShoppingCart /></el-icon>Add to
+            Cart</el-button
+          >
         </div>
-        <el-button
-          round
-          color="#0F5841"
-          style="
-            background-image: linear-gradient(to right, #0f5841, #87ab9f);
-            border: none;
-            margin-top: 20px;
-            width: 150px;
-          "
-          size="large"
-          @click="checkout"
-          >Buy Now</el-button
-        >
-        <el-button
-          round
-          color="#0F5841"
-          @click="addtoCart()"
-          style="
-            background-image: linear-gradient(to right, #0f5841, #87ab9f);
-            border: none;
-            margin-top: 20px;
-            width: 150px;
-          "
-          size="large"
-          ><el-icon style="margin-right: 8px"><ShoppingCart /></el-icon>Add to
-          Cart</el-button
-        >
-      </div>
-    </el-col>
-  </el-row>
-  <el-row style="margin: 20px; border: solid" :gutter="20">
-    <div style="text-align: left; padding: 10px; margin-left: 10px">
+      </el-col>
+    </el-row>
+  </el-card>
+  <el-row>
+    <el-card style="text-align: left; margin-top: 20px; width: 100%">
       <div style="font-weight: bold; color: #0f5841; font-size: 1.3rem">
         Product Description
       </div>
       <div style="font-weight: bold; color: #0f5841; font-size: 1rem">
         {{ info.productDescription }}
       </div>
-    </div>
+    </el-card>
   </el-row>
-  <el-row style="margin: 20px; border: solid" :gutter="20">
-    <div
-      style="text-align: left; padding: 10px; margin-left: 10px; width: 100%"
-    >
+  <el-row>
+    <el-card style="text-align: left; margin-top: 20px; width: 100%">
       <div
         style="
           font-weight: bold;
@@ -290,17 +301,6 @@ onMounted(async () => {
         Seller Information
       </div>
       <div style="display: flex; align-items: center">
-        <img
-          style="
-            width: 50px;
-            border-radius: 50%;
-            border: 2px solid #0f5841;
-            display: block;
-            max-inline-size: inherit;
-          "
-          src="/src/assets/ProfilePic.jpg"
-          alt=""
-        />
         <div
           style="
             font-weight: bold;
@@ -313,7 +313,24 @@ onMounted(async () => {
             align-content: space-evenly;
           "
         >
-          {{ sellerInfo.sellerName }}
+          <div>{{ sellerInfo.sellerName }}</div>
+          <div>
+            <el-button
+              color="#0F5841"
+              style="
+                background-image: linear-gradient(to right, #0f5841, #87ab9f);
+                display: flex;
+                justify-content: space-evenly;
+                align-items: center;
+              "
+              @click="redirectToWhatsApp(sellerInfo.phoneNumber)"
+            >
+              <span
+                ><el-icon size="20"><ChatRound /></el-icon
+              ></span>
+              <div style="color: white; margin-left: 5px">Chat Now</div>
+            </el-button>
+          </div>
         </div>
         <div style="justify-content: space-around; display: flex; width: 100%">
           <div style="margin-left: 10px; text-align: center">
@@ -347,29 +364,17 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-    </div>
+    </el-card>
   </el-row>
 
   <!--Feedback-->
   <el-row style="justify-content: center">
-    <el-card style="width: 100%; margin: 20px">
+    <el-card style="width: 100%; margin-top: 20px">
       <div style="display: flex; flex-direction: column">
         <div v-for="(item, index) in feedbackList" :key="index">
           <el-row>
-            <el-col :span="3">
-              <img
-                style="
-                  width: 50px;
-                  border-radius: 50%;
-                  border: 2px solid #0f5841;
-                  display: block;
-                "
-                src="/src/assets/ProfilePic.jpg"
-                alt=""
-              />
-            </el-col>
             <el-col
-              :span="21"
+              :span="24"
               style="
                 display: flex;
                 align-items: baseline;
